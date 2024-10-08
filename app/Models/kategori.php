@@ -1,58 +1,34 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Models;
 
-use App\Models\kategori;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-class kategoriController extends Controller
+class Kategori
 {
-    // Menampilkan semua kategori
-    public function index()
+    public static function getKategori()
     {
-        $kategoris = kategori::all();
-        return view('kategoris.index', compact('kategoris'));
+        return DB::table('kategori')->get();
     }
 
-    // Menampilkan form untuk menambah kategori
-    public function create()
+    public static function getKategoriId($id)
     {
-        return view('kategoris.create');
+        return DB::table('kategori')->where('id', $id)->first();
     }
 
-    // Menyimpan kategori baru
-    public function store(Request $request)
+    public static function addKategori($data)
     {
-        $request->validate([
-            'name' => 'required',
-        ]);
-
-        kategori::create($request->all());
-        return redirect()->route('kategoris.index')->with('success', 'Kategori berhasil ditambahkan.');
+        return DB::table('kategori')->insert($data);
     }
 
-    // Menampilkan form untuk mengedit kategori
-    public function edit(kategori $kategori)
+    public static function updateKategori($id, $data)
     {
-        return view('kategoris.edit', compact('kategori'));
+        return DB::table('kategori')->where('id', $id)->update($data);
     }
 
-    // Memperbarui kategori
-    public function update(Request $request, kategori $kategori)
+    public static function deleteKategori($id)
     {
-        $request->validate([
-            'name' => 'required',
-        ]);
-
-        $kategori->update($request->all());
-        return redirect()->route('kategoris.index')->with('success', 'Kategori berhasil diperbarui.');
-    }
-
-    // Menghapus kategori
-    public function destroy(kategori $kategori)
-    {
-        $kategori->delete();
-        return redirect()->route('kategoris.index')->with('success', 'Kategori berhasil dihapus.');
+        return DB::table('kategori')->where('id', $id)->delete();
     }
 }
 
