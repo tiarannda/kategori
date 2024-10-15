@@ -25,16 +25,16 @@
                         @endif
 
                         <!-- Form to edit category -->
-                        <form action="{{ route('kategori.update', $kategori->id) }}" method="POST">
+                        <form action="{{ route('kategoris.update', $kategori->id) }}" method="POST">
                             @csrf
                             @method('PUT') <!-- Menggunakan method PUT untuk update -->
                             <div class="mb-3">
-                                <label for="nama" class="form-label">Nama Kategori:</label>
-                                <input type="text" name="nama" class="form-control" value="{{ $kategori->nama }}" placeholder="Masukkan nama kategori" required>
+                                <label for="name" class="form-label">Nama Kategori:</label>
+                                <input type="text" name="name" class="form-control" value="{{ $kategori->name }}" placeholder="Masukkan nama kategori" required>
                             </div>
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary">Update</button>
-                                <a href="{{ route('kategori.index') }}" class="btn btn-secondary">Kembali</a>
+                                <a href="{{ route('kategoris.index') }}" class="btn btn-secondary">Kembali</a>
                             </div>
                         </form>
                     </div>

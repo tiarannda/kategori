@@ -1,15 +1,33 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\controllerKategori;
+use App\Http\Controllers\KategorisController; // Mengimpor KategoriController dengan benar
+use App\Http\Controllers\BarangController;   // Mengimpor BarangController
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route untuk halaman awal
+Route::get('/dashboard', function () {
+    return view('dashboard.dashboard');
+})->name('dashboard');
 
-Route::get('/kategori', [controllerKategori::class, 'index'])->name('kategori.index');
-Route::get('/kategori/create', [controllerKategori::class, 'create'])->name('kategori.create');
-Route::post('/kategori', [controllerKategori::class, 'store'])->name('kategori.store');
-Route::get('/kategori/{id}/edit', [controllerKategori::class, 'takeId'])->name('kategori.edit'); // Arahkan ke edit
-Route::put('/kategori/{id}', [controllerKategori::class, 'update'])->name('kategori.update'); // Gunakan PUT untuk update
-Route::delete('/kategori/{id}', [controllerKategori::class, 'destroy'])->name('kategori.destroy'); // Gunakan DELETE untuk delete
+
+
+
+// Route untuk kategori
+Route::get('/kategori', [KategorisController::class, 'index'])->name('kategoris.index'); // Menampilkan daftar kategori
+Route::get('/kategori/create', [KategorisController::class, 'create'])->name('kategoris.create'); // Form tambah kategori
+Route::post('/kategori', [KategorisController::class, 'store'])->name('kategoris.store'); // Simpan kategori baru
+Route::get('/kategori/edit', [KategorisController::class, 'edit'])->name('kategoris.edit'); // Form edit kategori
+Route::put('/kategori', [KategorisController::class, 'update'])->name('kategoris.update'); // Update kategori
+Route::delete('/kategori/{kategori}', [KategorisController::class, 'destroy'])->name('kategoris.destroy');
+
+// Route resource untuk barang
+
+Route::resource('kategoris', KategorisController::class);
+
+
+
+Route::resource('barang', BarangController::class); // Mengelola semua operasi CRUD untuk barang
+
+
+
+
