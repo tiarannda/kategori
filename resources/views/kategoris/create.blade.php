@@ -25,15 +25,15 @@
                         @endif
 
                         <!-- Form to add category -->
-                        <form action="{{ route('kategori.store') }}" method="POST">
+                        <form action="{{ route('kategoris.store') }}" method="POST">
                             @csrf
                             <div class="mb-3">
-                                <label for="nama" class="form-label">Nama Kategori:</label>
-                                <input type="text" name="nama" class="form-control" placeholder="Masukkan nama kategori" required>
+                                <label for="name" class="form-label">Nama Kategori:</label>
+                                <input type="text" name="name" class="form-control" placeholder="Masukkan nama kategori" required>
                             </div>
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary">Simpan</button>
-                                <a href="{{ route('kategori.index') }}" class="btn btn-secondary">Kembali</a>
+                                <a href="{{ route('kategoris.index') }}" class="btn btn-secondary">Kembali</a>
                             </div>
                         </form>
                     </div>

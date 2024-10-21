@@ -2,9 +2,8 @@
 
 @section('content')
 <div class="container">
-    <h2>Tambah Transaksi</h2>
-    
-    {{-- Tampilkan pesan kesalahan jika ada --}}
+    <h1>Tambah Transaksi</h1>
+
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -15,29 +14,37 @@
         </div>
     @endif
 
-    {{-- Form untuk menyimpan transaksi --}}
-    <form action="{{ route('transaksis.store') }}" method="POST">
+    <form action="{{ route('transaksis.store') }}" method="post">
         @csrf
-        <div class="mb-3">
-            <label for="id_barang" class="form-label">Barang</label>
-            <select class="form-control" id="id_barang" name="id_barang" required>
+
+        <div class="form-group">
+            <label for="id_barang">Barang</label>
+            <select name="id_barang" id_barang="id_barang" class="form-control">
+                <option value="">Pilih Barang</option>
                 @foreach($barangs as $barang)
-                    <option value="{{ $barang->id_barang }}">{{ $barang->nama_barang }} {{ $barang->harga }}</option>
+                    <option value="{{ $barang->id_barang }}">{{ $barang->nama_barang }} - Rp. {{ number_format($barang->harga, 3, '.', ',') }}</option>
                 @endforeach
             </select>
         </div>
 
-        <div class="mb-3">
-            <label for="jumlah_barang" class="form-label">Jumlah Barang</label>
-            <input type="number" class="form-control" id="jumlah_barang" name="jumlah_barang" min="1" required>
+        <div class="form-group">
+            <label for="jumlah_barang">Jumlah</label>
+            <input type="number" name="jumlah_barang" id_barang="jumlah_barang" class="form-control" min="1" value="{{ old('jumlah_barang') }}">
         </div>
 
-        <div class="mb-3">
-            <label for="tipe_transaksi" class="form-label">Tipe Transaksi</label>
-            <select class="form-control" id="tipe_transaksi" name="tipe_transaksi" required>
+        <div class="form-group">
+            <label for="tipe_transaksi">Tipe Transaksi</label>
+            <select name="tipe_transaksi" id_barang="tipe_transaksi" class="form-control">
+                <option value="">Pilih Tipe Transaksi</option>
                 <option value="jual">Jual</option>
                 <option value="beli">Beli</option>
             </select>
+        </div>
+
+        <!-- Input untuk Tanggal Transaksi -->
+        <div class="form-group">
+            <label for="tanggal_transaksi">Tanggal Transaksi</label>
+            <input type="date" name="tanggal_transaksi" id_barang="tanggal_transaksi" class="form-control" value="{{ old('tanggal_transaksi', date('Y-m-d')) }}">
         </div>
 
         <button type="submit" class="btn btn-primary">Simpan</button>

@@ -8,8 +8,7 @@
 @section('kategori_active', 'active')
 
 @section('content')
-    <h1>Data Kategori</h1>
-
+    
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif

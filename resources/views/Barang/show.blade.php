@@ -14,7 +14,7 @@
         <p><strong>Nama Barang:</strong> {{ $barang->nama_barang }}</p>
         <p><strong>Harga:</strong> {{ $barang->harga }}</p>
         <p><strong>Stok Saat Ini:</strong> {{ $barang->stok_saat_ini }}</p>
-        <p><strong>Kategori:</strong> {{ $barang->kategori->nama_kategori }}</p>
+        <p><strong>Kategori:</strong> {{ $barang->kategori->name }}</p> <!-- Pastikan relasi kategori sesuai -->
 
         <a href="{{ route('barang.index') }}" class="btn btn-primary">Kembali</a>
     </div>

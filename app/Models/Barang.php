@@ -9,7 +9,9 @@ class Barang extends Model
 {
     use HasFactory;
 
-    // Kolom-kolom yang bisa diisi secara massal
+    protected $primaryKey = 'id_barang';
+
+    // Kolom yang bisa diisi secara massal
     protected $fillable = [
         'nama_barang',
         'harga',
@@ -17,17 +19,15 @@ class Barang extends Model
         'id', // Foreign key ke tabel kategori
     ];
 
-    /**
-     * Relasi barang dengan kategori
-     * Barang belongs to Kategori
-     */
+    // Relasi barang belongs to kategori
     public function kategori()
     {
-        return $this->belongsTo(Kategoris::class, 'id');
+        return $this->belongsTo(Kategoris::class, 'id'); 
     }
 
-    public function transaksi()
+    public function transaksis()
     {
-        return $this->hasMany(Transaksis::class);
+        return $this->hasMany(Transaksi::class, 'id_barang');
     }
 }
+

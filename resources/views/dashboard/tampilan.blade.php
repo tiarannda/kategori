@@ -63,11 +63,7 @@
         <p>Akun</p>
       </a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" href="./typography.html">
-        <p>Tentang</p>
-      </a>
-    </li>
+   
   </ul>
 </div>
 

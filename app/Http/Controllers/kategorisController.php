@@ -24,14 +24,15 @@ class KategorisController extends Controller
             'name' => 'required', // Mengubah ke 'nama' sesuai dengan kolom di database
         ]);
 
-        Kategoris::create($request->all()); // Membuat kategori baru berdasarkan input
+        Kategoris::create($request->only('name')); // Membuat kategori baru berdasarkan input
         return redirect()->route('kategoris.index')->with('success', 'Kategori berhasil dibuat.'); // Mengarahkan kembali ke index dengan pesan sukses
     }
 
     public function show(Kategoris $kategori)
-    {
-        return view('kategoris.show', compact('kategori')); // Mengembalikan tampilan dengan detail kategori
-    }
+{
+    return view('kategoris.show', compact('kategori')); // Pastikan 'kategori' dalam bentuk tunggal di sini
+}
+
 
     public function edit(Kategoris $kategori)
     {
