@@ -5,7 +5,7 @@ use App\Http\Controllers\KategorisController; // Mengimpor KategoriController de
 use App\Http\Controllers\BarangController;   // Mengimpor BarangController
 use App\Http\Controllers\DashboardController; // Mengimpor DashboardController
 use App\Http\Controllers\TransaksiController;
-
+use App\Http\Controllers\LaporanController;
 // Route untuk halaman dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -34,3 +34,9 @@ Route::put('/transaksis/{transaksi}', [TransaksiController::class, 'update'])->n
 Route::post('/transaksis', [TransaksiController::class, 'store'])->name('transaksis.store');
 
 
+
+Route::get('/laporans', [LaporanController::class, 'index'])->name('laporans.index'); // Menampilkan semua laporan
+Route::get('/laporans/{id}', [LaporanController::class, 'show']);    // Menampilkan laporan spesifik
+Route::post('/laporans', [LaporanController::class, 'store']);       // Membuat laporan baru
+Route::put('/laporans/{id}', [LaporanController::class, 'update']);  // Mengupdate laporan
+Route::delete('/laporans/{id}', [LaporanController::class, 'destroy']); // Menghapus laporan
