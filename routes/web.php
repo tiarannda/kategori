@@ -30,7 +30,7 @@ Route::resource('transaksis', TransaksiController::class);
 Route::get('/transaksis/{id_transaksi}', [TransaksiController::class, 'show'])->name('transaksis.show');
 Route::delete('/transaksis/{id}', [TransaksiController::class, 'destroy'])->name('transaksis.destroy');
 Route::put('/transaksis/{transaksi}', [TransaksiController::class, 'update'])->name('transaksis.update');
-
+Route::get('/transaksis/{id}/edit', [TransaksiController::class, 'edit'])->name('transaksis.edit');
 Route::post('/transaksis', [TransaksiController::class, 'store'])->name('transaksis.store');
 
 

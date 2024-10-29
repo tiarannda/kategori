@@ -21,6 +21,7 @@
         <div class="form-group">
             <label for="id_barang">Barang</label>
             <select name="id_barang" id="id_barang" class="form-control">
+                <option value="">Pilih Barang</option>
                 @foreach($barangs as $barang)
                     <option value="{{ $barang->id_barang }}" {{ $barang->id_barang == $transaksi->id_barang ? 'selected' : '' }}>
                         {{ $barang->nama_barang }} - Rp. {{ number_format($barang->harga, 3, '.', ',') }}
@@ -31,15 +32,22 @@
 
         <div class="form-group">
             <label for="jumlah_barang">Jumlah</label>
-            <input type="number" name="jumlah_barang" id="jumlah_barang" class="form-control" value="{{ $transaksi->jumlah_barang }}" min="1">
+            <input type="number" name="jumlah_barang" id="jumlah_barang" class="form-control" min="1" value="{{ $transaksi->jumlah_barang }}">
         </div>
 
         <div class="form-group">
             <label for="tipe_transaksi">Tipe Transaksi</label>
             <select name="tipe_transaksi" id="tipe_transaksi" class="form-control">
+                <option value="">Pilih Tipe Transaksi</option>
                 <option value="jual" {{ $transaksi->tipe_transaksi == 'jual' ? 'selected' : '' }}>Jual</option>
                 <option value="beli" {{ $transaksi->tipe_transaksi == 'beli' ? 'selected' : '' }}>Beli</option>
             </select>
+        </div>
+
+        <!-- Input untuk Tanggal Transaksi -->
+        <div class="form-group">
+            <label for="tanggal_transaksi">Tanggal Transaksi</label>
+            <input type="date" name="tanggal_transaksi" id="tanggal_transaksi" class="form-control" value="{{ $transaksi->tanggal_transaksi }}">
         </div>
 
         <button type="submit" class="btn btn-primary">Update</button>
