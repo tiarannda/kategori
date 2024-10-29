@@ -46,8 +46,8 @@
                             <p>Transaksi</p>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
+                    <li class="nav-item @yield('laporans_active')">
+                    <a class="nav-link" href="{{ route('laporans.index') }}">
                             <p>Laporan</p>
                         </a>
                     </li>
