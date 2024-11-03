@@ -19,6 +19,17 @@ class LaporanController extends Controller
         return view('laporans.index', compact('laporans'));
     }
 
+    // Tampilkan formulir tambah laporan
+    public function create()
+    {
+        // Ambil data pengguna dan barang untuk dropdown
+        $users = User::all();
+        $barangs = Barang::all();
+
+        // Kirim data ke view create
+        return view('laporans.create', compact('users', 'barangs'));
+    }
+
     // Tampilkan laporan berdasarkan ID
     public function show($id)
     {
@@ -32,7 +43,7 @@ class LaporanController extends Controller
         return view('laporans.show', compact('laporan'));
     }
 
-    // Membuat laporan baru
+    // Menyimpan laporan baru
     public function store(Request $request)
     {
         // Validasi data input
