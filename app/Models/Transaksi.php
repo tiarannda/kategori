@@ -23,6 +23,7 @@ class Transaksi extends Model
         'tanggal_transaksi'=> 'datetime',
     ];
 
+    //relasi dengan barang
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'id_barang');
