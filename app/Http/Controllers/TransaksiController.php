@@ -11,21 +11,21 @@ class TransaksiController extends Controller
 {
     public function index()
     {
-        // Fetch all transactions with related 'barang' data
+        // tampilkan semua transaksi
         $transaksis = Transaksi::with('barang')->get();
         return view('transaksis.index', compact('transaksis'));
     }
 
     public function create()
     {
-        // Fetch all available items for the dropdown
+        // form menambahkan transaksi
         $barangs = Barang::all();
         return view('transaksis.create', compact('barangs'));
     }
 
     public function store(Request $request)
     {
-        // Validate input data
+        // simpan transaksi baru
         $request->validate([
             'id_barang' => 'required|exists:barangs,id_barang', 
             'jumlah_barang' => 'required|integer|min:1',
@@ -62,12 +62,14 @@ class TransaksiController extends Controller
         return redirect()->route('transaksis.index')->with('success', 'Transaksi berhasil disimpan.');
     }
 
+    // tampilkan detail transaksi
     public function show($id)
     {
         $transaksi = Transaksi::with('barang')->findOrFail($id);
         return view('transaksis.show', compact('transaksi'));
     }
 
+    // form mengedit transaksi
     public function edit($id)
     {
         $transaksi = Transaksi::findOrFail($id);
@@ -75,6 +77,7 @@ class TransaksiController extends Controller
         return view('transaksis.edit', compact('transaksi', 'barangs'));
     }
 
+    // update transaksi yg ada
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -117,6 +120,7 @@ class TransaksiController extends Controller
         return redirect()->route('transaksis.index')->with('success', 'Transaksi berhasil diupdate.');
     }
 
+    // hapus transaksi
     public function destroy($id)
     {
         $transaksi = Transaksi::findOrFail($id);

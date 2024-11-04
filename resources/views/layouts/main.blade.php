@@ -13,68 +13,72 @@
 <body>
     <div class="wrapper">
         <!-- Sidebar -->
-        <div class="sidebar" data-color="black" data-active-color="danger">
-            <div class="logo">
-                <a href="#" class="simple-text logo-mini">
-                    <div class="logo-image-small">
-                        <img src="../assets/img/logo_iCare.png">
-                    </div>
-                </a>
-                <a href="#" class="simple-text logo-normal">
-                    iCare Service
-                </a>
+        @if (!Request::is('transaksis/*/edit'))
+            <div class="sidebar" data-color="black" data-active-color="danger">
+                <div class="logo">
+                    <a href="#" class="simple-text logo-mini">
+                        <div class="logo-image-small">
+                            <img src="../assets/img/logo_iCare.png">
+                        </div>
+                    </a>
+                    <a href="#" class="simple-text logo-normal">
+                        iCare Service
+                    </a>
+                </div>
+                <div class="sidebar-wrapper">
+                    <ul class="nav">
+                        <li class="nav-item @yield('dashboard_active')">
+                            <a class="nav-link" href="{{ route('dashboard') }}">
+                                <p>Halaman</p>
+                            </a>
+                        </li>
+                        <li class="nav-item @yield('barang_active')">
+                            <a class="nav-link" href="{{ route('barang.index') }}">
+                                <p>Barang</p>
+                            </a>
+                        </li>
+                        <li class="nav-item @yield('kategori_active')">
+                            <a class="nav-link" href="{{ route('kategoris.index') }}">
+                                <p>Kategori</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('transaksis.index') }}">
+                                <p>Transaksi</p>
+                            </a>
+                        </li>
+                        <li class="nav-item @yield('laporans_active')">
+                            <a class="nav-link" href="{{ route('laporans.index') }}">
+                                <p>Laporan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <p>Akun</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <p>Tentang</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="sidebar-wrapper">
-                <ul class="nav">
-                    <li class="nav-item @yield('dashboard_active')">
-                        <a class="nav-link" href="{{ route('dashboard') }}">
-                            <p>Halaman</p>
-                        </a>
-                    </li>
-                    <li class="nav-item @yield('barang_active')">
-                        <a class="nav-link" href="{{ route('barang.index') }}">
-                            <p>Barang</p>
-                        </a>
-                    </li>
-                    <li class="nav-item @yield('kategori_active')">
-                        <a class="nav-link" href="{{ route('kategoris.index') }}">
-                            <p>Kategori</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('transaksis.index') }}">
-                            <p>Transaksi</p>
-                        </a>
-                    </li>
-                    <li class="nav-item @yield('laporans_active')">
-                    <a class="nav-link" href="{{ route('laporans.index') }}">
-                            <p>Laporan</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <p>Akun</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <p>Tentang</p>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        @endif
         <!-- End Sidebar -->
 
         <div class="main-panel">
             <!-- Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent">
-                <div class="container-fluid">
-                    <div class="navbar-wrapper">
-                        <a class="navbar-brand" href="#">@yield('page-title')</a>
+            @if (!Request::is('transaksis/*/edit'))
+                <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent">
+                    <div class="container-fluid">
+                        <div class="navbar-wrapper">
+                            <a class="navbar-brand" href="#">@yield('page-title')</a>
+                        </div>
                     </div>
-                </div>
-            </nav>
+                </nav>
+            @endif
             <!-- End Navbar -->
 
             <!-- Content -->
@@ -98,3 +102,4 @@
     <script src="../assets/js/paper-dashboard.min.js?v=2.0.1" type="text/javascript"></script>
 </body>
 </html>
+
