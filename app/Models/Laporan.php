@@ -17,14 +17,10 @@ class Laporan extends Model
         'total_penjualan',
         'total_barang_keluar',
         'total_barang_masuk',
-        'id_user',
         'id_barang'
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'id_user');
-    }
+    
 
     public function barang()
     {

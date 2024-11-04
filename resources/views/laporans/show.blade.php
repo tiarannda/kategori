@@ -10,7 +10,7 @@
     <table class="table table-bordered">
         <tr>
             <th>ID</th>
-            <td>{{ $laporan->id }}</td>
+            <td>{{ $laporan->id_laporan }}</td>
         </tr>
         <tr>
             <th>Tanggal Laporan</th>
@@ -33,12 +33,8 @@
             <td>{{ $laporan->total_barang_masuk }}</td>
         </tr>
         <tr>
-            <th>User</th>
-            <td>{{ $laporan->user->name ?? 'Tidak ada user' }}</td>
-        </tr>
-        <tr>
             <th>Barang</th>
-            <td>{{ $laporan->barang->name ?? 'Tidak ada barang' }}</td>
+            <td>{{ $laporan->barang->nama_barang }}</td>
         </tr>
     </table>
 

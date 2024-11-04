@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Laporan;
-use App\Models\User;
 use App\Models\Barang;
 use Illuminate\Http\Request;
 
@@ -13,7 +12,7 @@ class LaporanController extends Controller
     public function index()
     {
         // Ambil semua data laporan dengan relasi user dan barang
-        $laporans = Laporan::with('user', 'barang')->get();
+        $laporans = Laporan::with('barang')->get();
 
         // Kirim data laporan ke view laporans.index
         return view('laporans.index', compact('laporans'));
@@ -23,18 +22,18 @@ class LaporanController extends Controller
     public function create()
     {
         // Ambil data pengguna dan barang untuk dropdown
-        $users = User::all();
+       
         $barangs = Barang::all();
 
         // Kirim data ke view create
-        return view('laporans.create', compact('users', 'barangs'));
+        return view('laporans.create', compact('barangs'));
     }
 
     // Tampilkan laporan berdasarkan ID
-    public function show($id)
+    public function show($id_laporan)
     {
         // Cari laporan berdasarkan ID, termasuk relasi user dan barang
-        $laporan = Laporan::with('user', 'barang')->find($id);
+        $laporan = Laporan::with('barang')->find($id_laporan);
         if (!$laporan) {
             return redirect()->back()->with('error', 'Laporan tidak ditemukan');
         }
@@ -53,7 +52,7 @@ class LaporanController extends Controller
             'total_penjualan' => 'required|numeric|min:0',
             'total_barang_keluar' => 'required|integer|min:0',
             'total_barang_masuk' => 'required|integer|min:0',
-            'id_user' => 'required|exists:users,id',
+           
             'id_barang' => 'required|exists:barangs,id',
         ]);
 
@@ -65,10 +64,10 @@ class LaporanController extends Controller
     }
 
     // Update laporan berdasarkan ID
-    public function update(Request $request, $id)
+    public function update(Request $request, $id_laporan)
     {
         // Cari laporan berdasarkan ID
-        $laporan = Laporan::find($id);
+        $laporan = Laporan::find($id_laporan);
         if (!$laporan) {
             return redirect()->back()->with('error', 'Laporan tidak ditemukan');
         }
@@ -80,7 +79,7 @@ class LaporanController extends Controller
             'total_penjualan' => 'required|numeric|min:0',
             'total_barang_keluar' => 'required|integer|min:0',
             'total_barang_masuk' => 'required|integer|min:0',
-            'id_user' => 'required|exists:users,id',
+          
             'id_barang' => 'required|exists:barangs,id',
         ]);
 
@@ -92,10 +91,10 @@ class LaporanController extends Controller
     }
 
     // Hapus laporan berdasarkan ID
-    public function destroy($id)
+    public function destroy($id_laporan)
     {
         // Cari laporan berdasarkan ID
-        $laporan = Laporan::find($id);
+        $laporan = Laporan::find($id_laporan);
         if (!$laporan) {
             return redirect()->back()->with('error', 'Laporan tidak ditemukan');
         }

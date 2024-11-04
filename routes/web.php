@@ -37,6 +37,6 @@ Route::post('/transaksis', [TransaksiController::class, 'store'])->name('transak
 
 Route::resource('laporans', LaporanController::class);
 Route::get('/laporans', [LaporanController::class, 'index'])->name('laporans.index'); // Menampilkan semua laporan
-Route::get('/laporans/{id}', [LaporanController::class, 'show']);    // Menampilkan laporan spesifik
+
 Route::put('/laporans/{id}', [LaporanController::class, 'update']);  // Mengupdate laporan
 Route::delete('/laporans/{id}', [LaporanController::class, 'destroy']); // Menghapus laporan

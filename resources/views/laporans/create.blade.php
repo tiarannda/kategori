@@ -2,12 +2,10 @@
 
 @section('title', 'Tambah Laporan')
 
-
 @section('content')
 <div class="container">
     <h1>Tambah Laporan</h1>
 
-    <!-- Menampilkan pesan error jika ada -->
     @if($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -18,7 +16,6 @@
         </div>
     @endif
 
-    <!-- Form untuk menambah laporan -->
     <form action="{{ route('laporans.store') }}" method="POST">
         @csrf
         <div class="mb-3">
@@ -41,19 +38,12 @@
             <label for="total_barang_masuk" class="form-label">Total Barang Masuk</label>
             <input type="number" name="total_barang_masuk" class="form-control" required>
         </div>
-        <div class="mb-3">
-            <label for="id_user" class="form-label">User</label>
-            <select name="id_user" class="form-control" required>
-                @foreach($users as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                @endforeach
-            </select>
-        </div>
+       
         <div class="mb-3">
             <label for="id_barang" class="form-label">Barang</label>
             <select name="id_barang" class="form-control" required>
                 @foreach($barangs as $barang)
-                    <option value="{{ $barang->id }}">{{ $barang->name }}</option>
+                    <option value="{{ $barang->id }}">{{ $barang->nama_barang }}</option>
                 @endforeach
             </select>
         </div>
