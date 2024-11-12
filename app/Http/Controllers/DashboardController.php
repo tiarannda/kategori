@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Barang;
 use App\Models\Transaksi; // Pastikan ada model Transaksi untuk transaksi
+use App\Http\Middleware\RoleMiddleware;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function dashboard()
     {
         // Menghitung total stok dari tabel barang
         $totalStock = Barang::sum('stok_saat_ini');
@@ -39,5 +40,5 @@ class DashboardController extends Controller
             'untungBulanIni' => $untungBulanIni
         ]);
     }
-}
 
+}
