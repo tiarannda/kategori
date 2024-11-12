@@ -29,5 +29,8 @@ class Barang extends Model
     {
         return $this->hasMany(Transaksi::class, 'id_barang');
     }
+
+   
+
 }
 

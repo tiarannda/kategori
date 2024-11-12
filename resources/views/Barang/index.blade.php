@@ -8,7 +8,6 @@
 @section('barang_active', 'active')
 
 @section('content')
-    
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -41,6 +40,7 @@
                             <td>{{ $barang->stok_saat_ini }}</td>
                             <td>{{ $barang->kategori ? $barang->kategori->name : 'Tidak ada kategori' }}</td>
                             <td>
+                                <a href="{{ route('barang.show', $barang->id_barang) }}" class="btn btn-info btn-sm" style="font-family: 'Montserrat', sans-serif;">Detail</a>
                                 <a href="{{ route('barang.edit', $barang->id_barang) }}" class="btn btn-warning btn-sm" style="font-family: 'Montserrat', sans-serif;">Edit</a>
                                 <form action="{{ route('barang.destroy', $barang->id_barang) }}" method="POST" style="display:inline;">
                                     @csrf
