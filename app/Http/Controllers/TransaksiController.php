@@ -55,7 +55,7 @@ class TransaksiController extends Controller
             'id_barang' => $request->id_barang,
             'jumlah_barang' => $request->jumlah_barang,
             'total_harga' => $totalHarga,
-            'tanggal_transaksi' => now(), // Simpan tanggal saat ini
+            'tanggal' => now(), // Simpan tanggal saat ini
             'tipe_transaksi' => $request->tipe_transaksi,
         ]);
 
@@ -113,7 +113,7 @@ class TransaksiController extends Controller
             'id_barang' => $request->id_barang,
             'jumlah_barang' => $request->jumlah_barang,
             'total_harga' => $barang->harga * $request->jumlah_barang,
-            'tanggal_transaksi' => now(), // Update jika perlu
+            'tanggal' => now(), // Update jika perlu
             'tipe_transaksi' => $request->tipe_transaksi,
         ]);
 

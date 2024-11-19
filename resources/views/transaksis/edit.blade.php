@@ -46,8 +46,8 @@
 
         <!-- Input untuk Tanggal Transaksi -->
         <div class="form-group">
-            <label for="tanggal_transaksi">Tanggal Transaksi</label>
-            <input type="date" name="tanggal_transaksi" id="tanggal_transaksi" class="form-control" value="{{ $transaksi->tanggal_transaksi }}">
+            <label for="tanggal">Tanggal Transaksi</label>
+            <input type="date" name="tanggal" id="tanggal" class="form-control" value="{{ $transaksi->tanggal }}">
         </div>
 
         <button type="submit" class="btn btn-primary">Update</button>

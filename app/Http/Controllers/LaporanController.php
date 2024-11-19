@@ -2,107 +2,66 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Laporan;
-use App\Models\Barang;
 use Illuminate\Http\Request;
+use App\Models\Laporan;
+use App\Models\Transaksi;
 
 class LaporanController extends Controller
 {
-    // Tampilkan semua laporan dengan view
     public function index()
     {
-        // Ambil semua data laporan dengan relasi user dan barang
-        $laporans = Laporan::with('barang')->get();
-
-        // Kirim data laporan ke view laporans.index
+        // Ambil semua laporan yang sudah ada
+        $laporans = Laporan::all();
         return view('laporans.index', compact('laporans'));
     }
 
-    // Tampilkan formulir tambah laporan
     public function create()
     {
-        // Ambil data pengguna dan barang untuk dropdown
-       
-        $barangs = Barang::all();
-
-        // Kirim data ke view create
-        return view('laporans.create', compact('barangs'));
+        return view('laporans.create');
     }
 
-    // Tampilkan laporan berdasarkan ID
-    public function show($id_laporan)
+    public function store(Request $request)
     {
-        // Cari laporan berdasarkan ID, termasuk relasi user dan barang
-        $laporan = Laporan::with('barang')->find($id_laporan);
-        if (!$laporan) {
-            return redirect()->back()->with('error', 'Laporan tidak ditemukan');
-        }
+        // Ambil data dari tabel transaksi berdasarkan tanggal yang dipilih
+        $tanggal = $request->input('tanggal_laporan');
 
-        // Kirim data laporan spesifik ke view untuk detail
+        // Mengambil transaksi yang terjadi pada tanggal yang dipilih
+        $transaksis = Transaksi::whereDate('tanggal', $tanggal)->get();
+
+        // Menghitung total pemasukan dan pengeluaran berdasarkan transaksi
+        $total_pemasukan = number_format($transaksis->where('tipe_transaksi', 'jual')->sum('total_harga'), 3, '.', '');
+        $total_pengeluaran = number_format($transaksis->where('tipe_transaksi', 'beli')->sum('total_harga'), 3, '.', '');
+
+        // Menghitung total barang keluar dan barang masuk
+        $total_barang_keluar = $transaksis->where('tipe_transaksi', 'jual')->sum('jumlah_barang');
+        $total_barang_masuk = $transaksis->where('tipe_transaksi', 'beli')->sum('jumlah_barang');
+
+        // Simpan laporan yang baru
+        $laporan = Laporan::create([
+            'tanggal_laporan' => $tanggal,
+            'total_pemasukan' => $total_pemasukan,
+            'total_pengeluaran' => $total_pengeluaran,
+            'total_barang_keluar' => $total_barang_keluar,
+            'total_barang_masuk' => $total_barang_masuk,
+            'id_user' => auth()->user()->id,
+        ]);
+
+        return redirect()->route('laporans.index')->with('success', 'Laporan berhasil dibuat.');
+    }
+
+    public function show($id)
+    {
+        // Menampilkan detail laporan berdasarkan ID
+        $laporan = Laporan::findOrFail($id);
         return view('laporans.show', compact('laporan'));
     }
 
-    // Menyimpan laporan baru
-    public function store(Request $request)
+    public function destroy($id)
     {
-        // Validasi data input
-        $request->validate([
-            'tanggal_laporan' => 'required|date',
-            'total_pemasukan' => 'required|numeric|min:0',
-            'total_penjualan' => 'required|numeric|min:0',
-            'total_barang_keluar' => 'required|integer|min:0',
-            'total_barang_masuk' => 'required|integer|min:0',
-           
-            'id_barang' => 'required|exists:barangs,id',
-        ]);
-
-        // Simpan laporan baru ke database
-        $laporan = Laporan::create($request->all());
-
-        // Redirect ke halaman laporan dengan pesan sukses
-        return redirect()->route('laporans.index')->with('success', 'Laporan berhasil ditambahkan');
-    }
-
-    // Update laporan berdasarkan ID
-    public function update(Request $request, $id_laporan)
-    {
-        // Cari laporan berdasarkan ID
-        $laporan = Laporan::find($id_laporan);
-        if (!$laporan) {
-            return redirect()->back()->with('error', 'Laporan tidak ditemukan');
-        }
-
-        // Validasi data input
-        $request->validate([
-            'tanggal_laporan' => 'required|date',
-            'total_pemasukan' => 'required|numeric|min:0',
-            'total_penjualan' => 'required|numeric|min:0',
-            'total_barang_keluar' => 'required|integer|min:0',
-            'total_barang_masuk' => 'required|integer|min:0',
-          
-            'id_barang' => 'required|exists:barangs,id',
-        ]);
-
-        // Update laporan yang ditemukan
-        $laporan->update($request->all());
-
-        // Redirect ke halaman laporan dengan pesan sukses
-        return redirect()->route('laporans.index')->with('success', 'Laporan berhasil diperbarui');
-    }
-
-    // Hapus laporan berdasarkan ID
-    public function destroy($id_laporan)
-    {
-        // Cari laporan berdasarkan ID
-        $laporan = Laporan::find($id_laporan);
-        if (!$laporan) {
-            return redirect()->back()->with('error', 'Laporan tidak ditemukan');
-        }
-
-        // Hapus laporan yang ditemukan
+        // Menghapus laporan berdasarkan ID
+        $laporan = Laporan::findOrFail($id);
         $laporan->delete();
 
-        // Redirect ke halaman laporan dengan pesan sukses
-        return redirect()->route('laporans.index')->with('success', 'Laporan berhasil dihapus');
+        return redirect()->route('laporans.index')->with('success', 'Laporan berhasil dihapus.');
     }
 }

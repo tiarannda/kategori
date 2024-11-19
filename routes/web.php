@@ -29,9 +29,6 @@ Route::post('/transaksis', [TransaksiController::class, 'store'])->name('transak
 
 // Route resource untuk laporan
 Route::resource('laporans', LaporanController::class);
-Route::get('/laporans', [LaporanController::class, 'index'])->name('laporans.index');
-Route::put('/laporans/{id}', [LaporanController::class, 'update']);
-Route::delete('/laporans/{id}', [LaporanController::class, 'destroy']);
 
 // Route untuk login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

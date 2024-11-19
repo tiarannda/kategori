@@ -27,7 +27,7 @@
         </tr>
         <tr>
             <th>Tanggal Transaksi</th>
-            <td>{{ $transaksi->tanggal_transaksi->format('d M Y') }}</td>
+            <td>{{ $transaksi->tanggal->format('d M Y') }}</td>
         </tr>
     </table>
 

@@ -38,7 +38,7 @@
                     <td>{{ $transaksi->jumlah_barang }}</td>
                     <td>Rp. {{ number_format($transaksi->total_harga, 3, '.', ',') }}</td>
                     <td>{{ ucfirst($transaksi->tipe_transaksi) }}</td>
-                    <td>{{ $transaksi->tanggal_transaksi->format('d M Y') }}</td>
+                    <td>{{ $transaksi->tanggal->format('d M Y') }}</td>
                     <td class="kontainer-aksi">
                         <a href="{{ route('transaksis.show', $transaksi->id_transaksi) }}" class="btn btn-info">Detail</a>
                         <a href="{{ route('transaksis.edit', $transaksi->id_transaksi) }}" class="btn btn-warning">Edit</a>

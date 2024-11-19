@@ -9,21 +9,22 @@ class Laporan extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'id_laporan';
+    protected $table = 'laporans'; // Nama tabel
+    protected $primaryKey = 'id_laporan'; // Primary key
+    public $timestamps = true; // Untuk created_at dan updated_at
 
     protected $fillable = [
         'tanggal_laporan',
         'total_pemasukan',
-        'total_penjualan',
+        'total_pengeluaran', 
         'total_barang_keluar',
         'total_barang_masuk',
-        'id_barang'
+        'id_user',
     ];
 
-    
-
-    public function barang()
+    // Relasi ke tabel User
+    public function user()
     {
-        return $this->belongsTo(Barang::class, 'id_barang');
+        return $this->belongsTo(User::class, 'id_user');
     }
 }

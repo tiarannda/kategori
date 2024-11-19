@@ -17,7 +17,7 @@ class CreateLaporansTable extends Migration
             $table->id('id_laporan');
             $table->date('tanggal_laporan');
             $table->decimal('total_pemasukan', 15, 2);
-            $table->decimal('total_penjualan', 15, 2);
+            $table->decimal('total_pengeluaran', 15, 2);
             $table->integer('total_barang_keluar');
             $table->integer('total_barang_masuk');
             $table->foreignId('id_user')->constrained('users'); // Mengacu ke tabel users

@@ -16,11 +16,11 @@ class Transaksi extends Model
         'jumlah_barang',
         'total_harga',
         'tipe_transaksi',
-        'tanggal_transaksi',
+        'tanggal',
     ];
 
     protected $casts = [
-        'tanggal_transaksi'=> 'datetime',
+        'tanggal'=> 'datetime',
     ];
 
     //relasi dengan barang

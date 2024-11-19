@@ -43,8 +43,8 @@
 
         <!-- Input untuk Tanggal Transaksi -->
         <div class="form-group">
-            <label for="tanggal_transaksi">Tanggal Transaksi</label>
-            <input type="date" name="tanggal_transaksi" id_barang="tanggal_transaksi" class="form-control" value="{{ old('tanggal_transaksi', date('Y-m-d')) }}">
+            <label for="tanggal">Tanggal Transaksi</label>
+            <input type="date" name="tanggal" id_barang="tanggal" class="form-control" value="{{ old('tanggal', date('Y-m-d')) }}">
         </div>
 
         <button type="submit" class="btn btn-primary">Simpan</button>

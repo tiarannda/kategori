@@ -14,7 +14,7 @@ class CreateTransaksisTable extends Migration
         $table->integer('jumlah_barang');
         $table->decimal('total_harga', 10, 2);
         $table->enum('tipe_transaksi', ['jual', 'beli']);
-        $table->date('tanggal_transaksi');
+        $table->date('tanggal');
         $table->timestamps();
     });
 }
