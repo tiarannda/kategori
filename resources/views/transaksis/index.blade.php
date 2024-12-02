@@ -33,16 +33,16 @@
         <tbody>
             @foreach($transaksis as $transaksi)
                 <tr>
-                    <td>{{ $transaksi->id_transaksi }}</td>
+                    <td>{{ $transaksi->id }}</td>
                     <td>{{ $transaksi->barang->nama_barang }}</td>
                     <td>{{ $transaksi->jumlah_barang }}</td>
                     <td>Rp. {{ number_format($transaksi->total_harga, 3, '.', ',') }}</td>
                     <td>{{ ucfirst($transaksi->tipe_transaksi) }}</td>
                     <td>{{ $transaksi->tanggal->format('d M Y') }}</td>
                     <td class="kontainer-aksi">
-                        <a href="{{ route('transaksis.show', $transaksi->id_transaksi) }}" class="btn btn-info">Detail</a>
-                        <a href="{{ route('transaksis.edit', $transaksi->id_transaksi) }}" class="btn btn-warning">Edit</a>
-                        <form action="{{ route('transaksis.destroy', $transaksi->id_transaksi) }}" method="POST" style="display:inline-block;">
+                        <a href="{{ route('transaksis.show', $transaksi->id) }}" class="btn btn-info">Detail</a>
+                        <a href="{{ route('transaksis.edit', $transaksi->id) }}" class="btn btn-warning">Edit</a>
+                        <form action="{{ route('transaksis.destroy', $transaksi->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus transaksi ini?')">Hapus</button>

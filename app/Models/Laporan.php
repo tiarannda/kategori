@@ -19,7 +19,7 @@ class Laporan extends Model
         'total_pengeluaran', 
         'total_barang_keluar',
         'total_barang_masuk',
-        'id_user',
+        'id_user'
     ];
 
     // Relasi ke tabel User

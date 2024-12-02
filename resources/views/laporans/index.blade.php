@@ -2,7 +2,7 @@
 
 @section('title', 'iCare Service - Data Laporan')
 
-@section('page-title', 'Data Transaksi')
+@section('page-title', 'Data Laporan')
 
 @section('transaksi_active', 'active')
 

@@ -26,7 +26,7 @@ class LoginController extends Controller
 
         // Percobaan login menggunakan email dan password
         $credentials = $request->only('email', 'password');
-        
+
         // Jika login sukses, redirect ke dashboard
         if (Auth::attempt($credentials)) {
             return redirect()->intended('/dashboard');
@@ -42,6 +42,6 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

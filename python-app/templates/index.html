@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAW Perhitungan</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Perhitungan SAW</h1>
+        <form id="formSAW" class="mt-4">
+            <div class="mb-3">
+                <label for="inputData" class="form-label">Masukkan Data Alternatif (JSON Format)</label>
+                <textarea id="inputData" class="form-control" rows="10">{
+    "alternatif": [
+        {"nama": "iPhone 6", "C1": 229000, "C2": 200000, "C3": 1},
+        {"nama": "iPhone 7", "C1": 279000, "C2": 200000, "C3": 4},
+        {"nama": "iPhone 8", "C1": 369000, "C2": 200000, "C3": 2},
+        {"nama": "iPhone 8+", "C1": 379000, "C2": 230000, "C3": 2},
+        {"nama": "iPhone X", "C1": 579000, "C2": 250000, "C3": 5},
+        {"nama": "iPhone XR", "C1": 599000, "C2": 250000, "C3": 7},
+        {"nama": "iPhone 11", "C1": 749000, "C2": 250000, "C3": 2},
+        {"nama": "iPhone 12", "C1": 1649000, "C2": 350000, "C3": 3},
+        {"nama": "iPhone 13", "C1": 1749000, "C2": 350000, "C3": 2},
+        {"nama": "iPhone 14", "C1": 2000000, "C2": 400000, "C3": 1}
+    ],
+    "bobot": {
+        "C1": 0.54,
+        "C2": 0.30,
+        "C3": 0.16
+    }
+}</textarea>
+            </div>
+            <button type="button" id="btnSubmit" class="btn btn-primary">Hitung</button>
+        </form>
+        <div class="mt-5">
+            <h2>Hasil Perhitungan</h2>
+            <table class="table table-striped" id="hasilTable">
+                <thead>
+                    <tr>
+                        <th>Nama Barang</th>
+                        <th>Normalisasi C1</th>
+                        <th>Normalisasi C2</th>
+                        <th>Normalisasi C3</th>
+                        <th>Skor SAW</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Hasil akan ditampilkan di sini -->
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-5">
+            <h2>Barang dengan Skor Tertinggi</h2>
+            <div id="bestItem" class="alert alert-success" role="alert">
+                <!-- Barang terbaik akan ditampilkan di sini -->
+                <strong>Belum ada data.</strong>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById("btnSubmit").addEventListener("click", function () {
+            const inputData = document.getElementById("inputData").value;
+
+            // Kirim data ke server menggunakan fetch
+            fetch('/hitung', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: inputData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector("#hasilTable tbody");
+                tbody.innerHTML = ""; // Kosongkan tabel sebelumnya
+
+                // Iterasi hasil dan tambahkan ke tabel
+                let maxScore = -Infinity;
+                let bestItem = null;
+
+                data.forEach(row => {
+                    // Tambahkan setiap alternatif ke tabel
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${row.nama}</td>
+                        <td>${row.C1_normalisasi.toFixed(2)}</td>
+                        <td>${row.C2_normalisasi.toFixed(2)}</td>
+                        <td>${row.C3_normalisasi.toFixed(2)}</td>
+                        <td>${row.skor_saw.toFixed(2)}</td>
+                    `;
+                    tbody.appendChild(tr);
+
+                    // Cari barang dengan skor tertinggi
+                    if (row.skor_saw > maxScore) {
+                        maxScore = row.skor_saw;
+                        bestItem = row;
+                    }
+                });
+
+                // Tampilkan barang dengan skor tertinggi
+                const bestItemDiv = document.getElementById("bestItem");
+                if (bestItem) {
+                    bestItemDiv.innerHTML = `
+                        <strong>${bestItem.nama}</strong> adalah barang dengan skor tertinggi:
+                        <ul>
+                            <li>Skor SAW: ${bestItem.skor_saw.toFixed(2)}</li>
+                            <li>Normalisasi C1: ${bestItem.C1_normalisasi.toFixed(2)}</li>
+                            <li>Normalisasi C2: ${bestItem.C2_normalisasi.toFixed(2)}</li>
+                            <li>Normalisasi C3: ${bestItem.C3_normalisasi.toFixed(2)}</li>
+                        </ul>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error("Terjadi kesalahan:", error);
+            });
+        });
+    </script>
+</body>
+</html>

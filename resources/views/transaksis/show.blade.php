@@ -7,7 +7,7 @@
     <table class="table">
         <tr>
             <th>ID</th>
-            <td>{{ $transaksi->id_transaksi }}</td>
+            <td>{{ $transaksi->id }}</td>
         </tr>
         <tr>
             <th>Nama Barang</th>

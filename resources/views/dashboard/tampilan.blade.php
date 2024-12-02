@@ -49,21 +49,28 @@
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="./notifications.html">
+    <a class="nav-link" href="{{ route('transaksis.index') }}">
         <p>Transaksi</p>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="./user.html">
+    <a class="nav-link" href="{{ route('laporans.index') }}">
         <p>Laporan</p>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="./tables.html">
+    <a class="nav-link" href="{{ route('users.index') }}">
         <p>Akun</p>
       </a>
     </li>
-   
+    <li class="nav-item">
+        <form action="{{ route('logout') }}" method="post">
+            @csrf
+            <button type="submit">Logout</button>
+        </form>
+      </a>
+    </li>
+
   </ul>
 </div>
 

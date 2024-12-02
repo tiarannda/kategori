@@ -3,20 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Laporan;
 use App\Models\Transaksi;
 use Carbon\Carbon;  
+
 
 
 class LaporanController extends Controller
 {
     public function index()
     {
-        // Mengambil semua laporan dan mengelompokkan berdasarkan bulan dan tahun
-        $laporans = Laporan::all()->groupBy(function($date) {
-            return Carbon::parse($date->tanggal_laporan)->format('F Y'); // Mengelompokkan berdasarkan bulan dan tahun
-        });
-
+        $laporans = DB::table('laporans')
+            ->select('*', DB::raw("DATE_FORMAT(tanggal_laporan, '%M %Y') as bulan"))
+            ->orderBy('tanggal_laporan', 'desc')
+            ->get()
+            ->groupBy('bulan');
+    
         return view('laporans.index', compact('laporans'));
     }
 

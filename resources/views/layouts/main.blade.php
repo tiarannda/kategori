@@ -53,15 +53,11 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                        <a class="nav-link" href="{{ route('users.index') }}">
                                 <p>Akun</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <p>Tentang</p>
-                            </a>
-                        </li>
+                        
                     </ul>
                 </div>
             </div>
