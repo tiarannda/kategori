@@ -5,21 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Laporan;
-use App\Models\Transaksi;
-use Carbon\Carbon;  
-
-
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class LaporanController extends Controller
 {
     public function index()
     {
-        $laporans = DB::table('laporans')
-            ->select('*', DB::raw("DATE_FORMAT(tanggal_laporan, '%M %Y') as bulan"))
+        $laporans = Laporan::all();
+
+        // Ambil laporan dengan grouping bulan
+        $laporans = Laporan::select('*', DB::raw("DATE_FORMAT(tanggal_laporan, '%M %Y') as bulan"))
             ->orderBy('tanggal_laporan', 'desc')
             ->get()
             ->groupBy('bulan');
-    
+
         return view('laporans.index', compact('laporans'));
     }
 
@@ -29,47 +31,118 @@ class LaporanController extends Controller
     }
 
     public function store(Request $request)
+{
+    $request->validate([
+        'tanggal_laporan' => 'required|date',
+    ]);
+
+    // Ambil tanggal laporan dari request
+    $tanggal = $request->tanggal_laporan;
+
+    // Query untuk total pemasukan (tipe_transaksi = jual)
+    $totalPemasukan = DB::table('transaksis')
+        ->where('tipe_transaksi', 'jual')
+        ->whereDate('tanggal', $tanggal)
+        ->sum('total_harga');
+
+    // Query untuk total pengeluaran (tipe_transaksi = beli)
+    $totalPengeluaran = DB::table('transaksis')
+        ->where('tipe_transaksi', 'beli')
+        ->whereDate('tanggal', $tanggal)
+        ->sum('total_harga');
+
+    // Query untuk total barang keluar (tipe_transaksi = jual)
+    $totalBarangKeluar = DB::table('transaksis')
+        ->where('tipe_transaksi', 'jual')
+        ->whereDate('tanggal', $tanggal)
+        ->sum('jumlah_barang');
+
+    // Query untuk total barang masuk (tipe_transaksi = beli)
+    $totalBarangMasuk = DB::table('transaksis')
+        ->where('tipe_transaksi', 'beli')
+        ->whereDate('tanggal', $tanggal)
+        ->sum('jumlah_barang');
+
+    // Simpan data ke tabel laporan
+    Laporan::create([
+        'tanggal_laporan' => $tanggal,
+        'total_pemasukan' => $totalPemasukan,
+        'total_pengeluaran' => $totalPengeluaran,
+        'total_barang_keluar' => $totalBarangKeluar,
+        'total_barang_masuk' => $totalBarangMasuk,
+        'id_user' => 1, // ID pengguna dari sesi login
+    ]);
+
+    return redirect()->route('laporans.index')->with('success', 'Laporan berhasil ditambahkan!');
+}
+
+
+
+    public function show($id_laporan)
     {
-        // Ambil data dari tabel transaksi berdasarkan tanggal yang dipilih
-        $tanggal = $request->input('tanggal_laporan');
-
-        // Mengambil transaksi yang terjadi pada tanggal yang dipilih
-        $transaksis = Transaksi::whereDate('tanggal', $tanggal)->get();
-
-        // Menghitung total pemasukan dan pengeluaran berdasarkan transaksi
-        $total_pemasukan = number_format($transaksis->where('tipe_transaksi', 'jual')->sum('total_harga'), 3, '.', '');
-        $total_pengeluaran = number_format($transaksis->where('tipe_transaksi', 'beli')->sum('total_harga'), 3, '.', '');
-
-        // Menghitung total barang keluar dan barang masuk
-        $total_barang_keluar = $transaksis->where('tipe_transaksi', 'jual')->sum('jumlah_barang');
-        $total_barang_masuk = $transaksis->where('tipe_transaksi', 'beli')->sum('jumlah_barang');
-
-        // Simpan laporan yang baru
-        $laporan = Laporan::create([
-            'tanggal_laporan' => $tanggal,
-            'total_pemasukan' => $total_pemasukan,
-            'total_pengeluaran' => $total_pengeluaran,
-            'total_barang_keluar' => $total_barang_keluar,
-            'total_barang_masuk' => $total_barang_masuk,
-            'id_user' => auth()->user()->id,
-        ]);
-
-        return redirect()->route('laporans.index')->with('success', 'Laporan berhasil dibuat.');
-    }
-
-    public function show($id)
-    {
-        // Menampilkan detail laporan berdasarkan ID
-        $laporan = Laporan::findOrFail($id);
+        $laporan = Laporan::findOrFail($id_laporan);
         return view('laporans.show', compact('laporan'));
     }
 
-    public function destroy($id)
+    public function destroy($id_laporan)
     {
-        // Menghapus laporan berdasarkan ID
-        $laporan = Laporan::findOrFail($id);
+        $laporan = Laporan::findOrFail($id_laporan);
         $laporan->delete();
 
         return redirect()->route('laporans.index')->with('success', 'Laporan berhasil dihapus.');
+    }
+
+    public function sendLaporanToDropbox(Request $request)
+    {
+        try {
+            // Pastikan folder 'laporan' ada
+            // $this->ensureLaporanFolderExists();
+
+            $request->validate([
+                'tanggal' => 'required|date',
+            ]);
+
+            $tanggal = $request->input('tanggal');
+            $laporans = Laporan::whereDate('tanggal_laporan', $tanggal)->get();
+
+            if ($laporans->isEmpty()) {
+                return redirect()->back()->with('error', 'Tidak ada laporan untuk tanggal tersebut.');
+            }
+
+            // Format laporan sebagai CSV
+            $csvData = "ID,Tanggal,Pemasukan,Pengeluaran,Barang Keluar,Barang Masuk\n";
+            foreach ($laporans as $laporan) {
+                $csvData .= "{$laporan->id},{$laporan->tanggal_laporan},{$laporan->total_pemasukan},{$laporan->total_pengeluaran},{$laporan->total_barang_keluar},{$laporan->total_barang_masuk}\n";
+            }
+
+            $fileName = "laporan_{$tanggal}.csv";
+            $filePath = "laporan/$fileName";
+
+            // Menulis file CSV ke Dropbox menggunakan stream
+            $stream = fopen('php://temp', 'r+');
+            fwrite($stream, $csvData);
+            rewind($stream);
+
+            Storage::disk('dropbox')->writeStream($filePath, $stream);
+
+            return redirect()->back()->with('success', "Laporan tanggal $tanggal berhasil dikirim ke Dropbox!");
+        } catch (\Exception $e) {
+            Log::error('Error saat mengirim laporan ke Dropbox: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengirim laporan ke Dropbox: ' . $e->getMessage());
+        }
+    }
+
+    public function checkDropboxToken()
+    {
+        // Ambil token akses dari file .env
+        $dropboxToken = env('DROPBOX_ACCESS_TOKEN');
+
+        // Log token untuk memastikan bahwa token bisa diambil dari .env
+        Log::info('Dropbox Access Token: ' . $dropboxToken);
+
+        if (!$dropboxToken) {
+            Log::error('Dropbox Access Token tidak ditemukan di .env');
+            return response()->json(['error' => 'Token Dropbox tidak ditemukan di .env'], 500);
+        }
     }
 }

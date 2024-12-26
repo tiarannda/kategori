@@ -1,17 +1,33 @@
 <!-- resources/views/Akun/show.blade.php -->
-@extends('layouts.app')
+@extends('layouts.main')
 
 @section('content')
 <div class="container">
     <h2>Detail Akun</h2>
+
+    <!-- Card untuk menampilkan informasi akun -->
     <div class="card">
+        <div class="card-header">
+            <h4>Informasi Pengguna</h4>
+        </div>
         <div class="card-body">
             <h5 class="card-title">ID User: {{ $user->id_user }}</h5>
-            <p class="card-text"><strong>Username:</strong> {{ $user->username }}</p>
-            <p class="card-text"><strong>Role:</strong> {{ $user->role }}</p>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="card-text"><strong>Username:</strong> {{ $user->username }}</p>
+                    <p class="card-text"><strong>Email:</strong> {{ $user->email }}</p>
+                    <p class="card-text"><strong>Role:</strong> {{ $user->role }}</p>
+                </div>
+
+            </div>
         </div>
     </div>
-    <a href="{{ route('akun.index') }}" class="btn btn-secondary mt-3">Kembali ke Daftar Akun</a>
-    <a href="{{ route('akun.edit', $user->id_user) }}" class="btn btn-warning mt-3">Edit Akun</a>
+
+    <!-- Tombol untuk kembali dan edit akun -->
+    <div class="mt-3">
+        <a href="{{ route('users.index') }}" class="btn btn-secondary">Kembali ke Daftar Akun</a>
+    
+    </div>
 </div>
 @endsection

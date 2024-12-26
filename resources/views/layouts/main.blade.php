@@ -42,22 +42,21 @@
                                 <p>Kategori</p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item @yield('transaksi_active')">
                             <a class="nav-link" href="{{ route('transaksis.index') }}">
                                 <p>Transaksi</p>
                             </a>
                         </li>
-                        <li class="nav-item @yield('laporans_active')">
+                        <li class="nav-item @yield('laporan_active')">
                             <a class="nav-link" href="{{ route('laporans.index') }}">
                                 <p>Laporan</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                        <a class="nav-link" href="{{ route('users.index') }}">
+                        <li class="nav-item @yield('user_active')">
+                            <a class="nav-link" href="{{ route('users.index') }}">
                                 <p>Akun</p>
                             </a>
                         </li>
-                        
                     </ul>
                 </div>
             </div>
@@ -71,6 +70,16 @@
                     <div class="container-fluid">
                         <div class="navbar-wrapper">
                             <a class="navbar-brand" href="#">@yield('page-title')</a>
+                        </div>
+                        <div class="collapse navbar-collapse justify-content-end" id="navigation">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <form action="{{ route('logout') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </nav>
@@ -98,4 +107,3 @@
     <script src="../assets/js/paper-dashboard.min.js?v=2.0.1" type="text/javascript"></script>
 </body>
 </html>
-
