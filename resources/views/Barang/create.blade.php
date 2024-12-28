@@ -1,9 +1,12 @@
 <!-- resources/views/barang/create.blade.php -->
 @extends('layouts.main')
 
+@section('page-title', 'Tambah Barang')
+
+@section('kategori_active', 'active')
+
 @section('content')
 <div class="container mt-5">
-    <h1>Tambah Barang</h1>
 
     @if($errors->any())
         <div class="alert alert-danger">

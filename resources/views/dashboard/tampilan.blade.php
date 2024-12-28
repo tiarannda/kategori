@@ -38,32 +38,50 @@
               <p>Halaman</p>
             </a>
           </li>
+
+          <!-- Barang menu hanya ditampilkan jika role admin atau karyawan -->
           <li class="nav-item">
             <a class="nav-link" href="{{ route('barang.index') }}">
               <p>Barang</p>
             </a>
           </li>
+
+          <!-- Kategori menu hanya ditampilkan jika role admin -->
+          @if(auth()->user()->role == 'admin')
           <li class="nav-item">
             <a class="nav-link" href="{{ route('kategoris.index') }}">
               <p>Kategori</p>
             </a>
           </li>
+          @endif
+
+          <!-- Transaksi menu hanya ditampilkan jika role admin atau karyawan -->
           <li class="nav-item">
             <a class="nav-link" href="{{ route('transaksis.index') }}">
               <p>Transaksi</p>
             </a>
           </li>
+
+          <!-- Laporan menu hanya ditampilkan jika role admin atau karyawan -->
           <li class="nav-item">
             <a class="nav-link" href="{{ route('laporans.index') }}">
               <p>Laporan</p>
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ route('users.index') }}">
-              <p>Akun</p>
-            </a>
-          </li>
-          
+
+         <!-- Akun menu ditampilkan untuk admin dan karyawan -->
+<li class="nav-item">
+    @if(auth()->user()->role == 'admin')
+      <a class="nav-link" href="{{ route('users.index') }}">
+        <p>Akun</p>
+      </a>
+    @else
+      <a class="nav-link" href="{{ route('users.show', auth()->user()->id_user) }}">
+        <p>Akun</p>
+      </a>
+    @endif
+  </li>
+
         </ul>
       </div>
     </div>
@@ -114,6 +132,7 @@
       <!-- CONTENT -->
       @yield('content')
       <!-- END CONTENT -->
+
       <footer class="footer footer-black footer-white">
         <div class="container-fluid">
           <div class="row">
@@ -128,7 +147,7 @@
               <span class="copyright">
                 © <script>
                   document.write(new Date().getFullYear())
-                </script>, made with <i class="fa fa-heart heart"></i> by Creative Tim
+                </script>, made with <i class="fa fa-heart heart"></i> by Tim PBL
               </span>
             </div>
           </div>
@@ -136,6 +155,7 @@
       </footer>
     </div>
   </div>
+
   <!-- Core JS Files -->
   <script src="../assets/js/core/jquery.min.js"></script>
   <script src="../assets/js/core/popper.min.js"></script>
@@ -144,7 +164,7 @@
   <!-- Google Maps Plugin -->
   <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
   <!-- Chart JS -->
-  <script src="../assets/js/plugins/chartjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Notifications Plugin -->
   <script src="../assets/js/plugins/bootstrap-notify.js"></script>
   <!-- Paper Dashboard Control Center -->

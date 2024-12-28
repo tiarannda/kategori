@@ -5,6 +5,8 @@
 
 @section('page-title', 'Detail Barang')
 
+@section('kategori_active', 'active')
+
 @section('content')
 <div class="container mt-4">
     <div class="card">

@@ -1,8 +1,11 @@
 @extends('layouts.main')
 
+@section('page-title', 'Detail Transaksi')
+
+@section('kategori_active', 'active')
+
 @section('content')
 <div class="container">
-    <h1>Detail Transaksi</h1>
 
     <table class="table">
         <tr>

@@ -1,13 +1,13 @@
 <!-- resources/views/kategoris/create.blade.php -->
 @extends('layouts.main')
 
-@section('title', 'Tambah Kategori')
+@section('page-title', 'Data Kategori')
 
+@section('kategori_active', 'active')
 
 
 @section('content')
 <div class="container mt-5">
-    <h1>Tambah Kategori</h1>
 
     <!-- Error messages -->
     @if($errors->any())

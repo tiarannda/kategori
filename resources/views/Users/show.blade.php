@@ -1,33 +1,29 @@
-<!-- resources/views/Akun/show.blade.php -->
 @extends('layouts.main')
+
+@section('page-title', 'Detail Akun')
+
+@section('user_active', 'active')
 
 @section('content')
 <div class="container">
-    <h2>Detail Akun</h2>
+    <!-- Tampilkan data diri jika yang login adalah karyawan -->
+    @if (Auth::user()->role == 'karyawan' && Auth::user()->id_user == $user->id_user)
+        <p><strong>Nama:</strong> {{ $user->name }}</p>
+        <p><strong>Email:</strong> {{ $user->email }}</p>
+        <p><strong>Username:</strong> {{ $user->username }}</p>
+    @elseif (Auth::user()->role == 'admin')
+        <!-- Admin bisa melihat detail akun siapapun -->
+        <h3>Detail Akun</h3>
+        <p><strong>Nama:</strong> {{ $user->name }}</p>
+        <p><strong>Email:</strong> {{ $user->email }}</p>
+        <p><strong>Username:</strong> {{ $user->username }}</p>
+        <a href="{{ route('users.edit', $user) }}" class="btn btn-warning">Edit</a>
 
-    <!-- Card untuk menampilkan informasi akun -->
-    <div class="card">
-        <div class="card-header">
-            <h4>Informasi Pengguna</h4>
-        </div>
-        <div class="card-body">
-            <h5 class="card-title">ID User: {{ $user->id_user }}</h5>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="card-text"><strong>Username:</strong> {{ $user->username }}</p>
-                    <p class="card-text"><strong>Email:</strong> {{ $user->email }}</p>
-                    <p class="card-text"><strong>Role:</strong> {{ $user->role }}</p>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- Tombol untuk kembali dan edit akun -->
-    <div class="mt-3">
-        <a href="{{ route('users.index') }}" class="btn btn-secondary">Kembali ke Daftar Akun</a>
-    
-    </div>
+        <form action="{{ route('users.destroy', $user) }}" method="POST" style="display:inline-block;">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Hapus akun ini?')">Hapus</button>
+        </form>
+    @endif
 </div>
 @endsection

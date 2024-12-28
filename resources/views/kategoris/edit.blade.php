@@ -1,13 +1,14 @@
 <!-- resources/views/kategoris/edit.blade.php -->
 @extends('layouts.main')
 
-@section('title', 'Edit Kategori')
+@section('title', 'Edit Data Kategori')
 
 @section('page-title', 'Edit Kategori')
 
+@section('kategori_active', 'active')
+
 @section('content')
 <div class="container mt-5">
-    <h1>Edit Kategori</h1>
 
     <!-- Success message -->
     @if(session('success'))

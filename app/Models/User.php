@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    use HasApiTokens;
+
     use Notifiable;
 
     protected $primaryKey = 'id_user';
@@ -16,8 +19,9 @@ class User extends Authenticatable
         'email',
         'username',
         'password',
-        'email_verified_at',
+        'role',
     ];
+
 
     protected $hidden = [
         'password',

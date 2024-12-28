@@ -31,50 +31,50 @@ class LaporanController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'tanggal_laporan' => 'required|date',
-    ]);
+    {
+        $request->validate([
+            'tanggal_laporan' => 'required|date',
+        ]);
 
-    // Ambil tanggal laporan dari request
-    $tanggal = $request->tanggal_laporan;
+        // Ambil tanggal laporan dari request
+        $tanggal = $request->tanggal_laporan;
 
-    // Query untuk total pemasukan (tipe_transaksi = jual)
-    $totalPemasukan = DB::table('transaksis')
-        ->where('tipe_transaksi', 'jual')
-        ->whereDate('tanggal', $tanggal)
-        ->sum('total_harga');
+        // Query untuk total pemasukan (tipe_transaksi = jual)
+        $totalPemasukan = DB::table('transaksis')
+            ->where('tipe_transaksi', 'jual')
+            ->whereDate('tanggal', Carbon::parse($tanggal)) // Pastikan format tanggal sesuai
+            ->sum('total_harga');
 
-    // Query untuk total pengeluaran (tipe_transaksi = beli)
-    $totalPengeluaran = DB::table('transaksis')
-        ->where('tipe_transaksi', 'beli')
-        ->whereDate('tanggal', $tanggal)
-        ->sum('total_harga');
+        // Query untuk total pengeluaran (tipe_transaksi = beli)
+        $totalPengeluaran = DB::table('transaksis')
+            ->where('tipe_transaksi', 'beli')
+            ->whereDate('tanggal', Carbon::parse($tanggal)) // Pastikan format tanggal sesuai
+            ->sum('total_harga');
 
-    // Query untuk total barang keluar (tipe_transaksi = jual)
-    $totalBarangKeluar = DB::table('transaksis')
-        ->where('tipe_transaksi', 'jual')
-        ->whereDate('tanggal', $tanggal)
-        ->sum('jumlah_barang');
+        // Query untuk total barang keluar (tipe_transaksi = jual)
+        $totalBarangKeluar = DB::table('transaksis')
+            ->where('tipe_transaksi', 'jual')
+            ->whereDate('tanggal', Carbon::parse($tanggal)) // Pastikan format tanggal sesuai
+            ->sum('jumlah_barang');
 
-    // Query untuk total barang masuk (tipe_transaksi = beli)
-    $totalBarangMasuk = DB::table('transaksis')
-        ->where('tipe_transaksi', 'beli')
-        ->whereDate('tanggal', $tanggal)
-        ->sum('jumlah_barang');
+        // Query untuk total barang masuk (tipe_transaksi = beli)
+        $totalBarangMasuk = DB::table('transaksis')
+            ->where('tipe_transaksi', 'beli')
+            ->whereDate('tanggal', Carbon::parse($tanggal)) // Pastikan format tanggal sesuai
+            ->sum('jumlah_barang');
 
-    // Simpan data ke tabel laporan
-    Laporan::create([
-        'tanggal_laporan' => $tanggal,
-        'total_pemasukan' => $totalPemasukan,
-        'total_pengeluaran' => $totalPengeluaran,
-        'total_barang_keluar' => $totalBarangKeluar,
-        'total_barang_masuk' => $totalBarangMasuk,
-        'id_user' => 1, // ID pengguna dari sesi login
-    ]);
+        // Simpan data ke tabel laporan
+        Laporan::create([
+            'tanggal_laporan' => $tanggal,
+            'total_pemasukan' => $totalPemasukan,
+            'total_pengeluaran' => $totalPengeluaran,
+            'total_barang_keluar' => $totalBarangKeluar,
+            'total_barang_masuk' => $totalBarangMasuk,
+            'id_user' => 1, // ID pengguna dari sesi login
+        ]);
 
-    return redirect()->route('laporans.index')->with('success', 'Laporan berhasil ditambahkan!');
-}
+        return redirect()->route('laporans.index')->with('success', 'Laporan berhasil ditambahkan!');
+    }
 
 
 

@@ -1,8 +1,11 @@
 @extends('layouts.main')
+@section('page-title', 'Tambah Laporan')
+
+@section('laporan_active', 'active')
 
 @section('content')
 <div class="container">
-    <h1>Tambah Laporan</h1>
+   
     <form action="{{ route('laporans.store') }}" method="POST">
         @csrf
         <div class="form-group">

@@ -20,23 +20,30 @@ class UserController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'username' => 'required|string|max:50|unique:users,username',
-            'password' => 'required|min:8|confirmed',
-        ]);
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'username' => 'required|string|max:50|unique:users,username',
+        'password' => 'required|min:8|confirmed',
+        'role' => 'required|in:admin,karyawan', // Validasi role
+    ]);
 
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'username' => $validated['username'],
-            'password' => bcrypt($validated['password']),
-        ]);
+    // Debugging: Cek data yang akan disimpan
+    \Log::info($validated);
 
-        return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan.');
-    }
+    // Menyimpan data user
+    User::create([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'username' => $validated['username'],
+        'password' => bcrypt($validated['password']),
+        'role' => $validated['role'],
+    ]);
+
+    // Redirect dengan pesan sukses
+    return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan.');
+}
 
     public function edit($id_user)
 {
@@ -94,12 +101,16 @@ public function update(Request $request, $id_user)
 
 public function show($id_user)
 {
-    // Mengambil data user berdasarkan ID
     $user = User::findOrFail($id_user);
 
-    // Mengirimkan data user ke view
+    // Cek apakah yang login adalah karyawan dan hanya boleh melihat data mereka sendiri
+    if (auth()->user()->role == 'karyawan' && auth()->user()->id_user != $id_user) {
+        return redirect()->route('users.show', auth()->user()->id_user);
+    }
+
     return view('users.show', compact('user'));
 }
+
 
 
     public function destroy(User $user)

@@ -6,8 +6,10 @@
 
 @section('content')
 <div class="container">
-    <!-- Tombol Tambah Akun -->
-    <a href="{{ route('users.create') }}" class="btn btn-primary mb-3">Tambah Akun</a>
+    <!-- Tombol Tambah Akun hanya untuk admin -->
+    @if (Auth::user()->role == 'admin')
+        <a href="{{ route('users.create') }}" class="btn btn-primary mb-3">Tambah Akun</a>
+    @endif
 
     <!-- Tabel Data Akun -->
     <table class="table table-bordered">
@@ -21,20 +23,26 @@
         </thead>
         <tbody>
             @foreach ($users as $user)
-            <tr>
-                <td>{{ $user->name }}</td>
-                <td>{{ $user->email }}</td>
-                <td>{{ $user->username }}</td>
-                <td>
-                    <a href="{{ route('users.show', $user) }}" class="btn btn-info">Lihat</a>
-                 
-                    <form action="{{ route('users.destroy', $user) }}" method="POST" style="display:inline-block;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Hapus</button>
-                    </form>
-                </td>
-            </tr>
+                @if (Auth::user()->role == 'admin' || Auth::user()->id_user == $user->id_user)
+                    <tr>
+                        <td>{{ $user->name }}</td>
+                        <td>{{ $user->email }}</td>
+                        <td>{{ $user->username }}</td>
+                        <td>
+                            <!-- Lihat hanya untuk admin dan akun yang sedang login -->
+                            <a href="{{ route('users.show', $user) }}" class="btn btn-info">Lihat</a>
+
+                            <!-- Tombol Hapus dan Edit hanya untuk admin -->
+                            @if (Auth::user()->role == 'admin' && Auth::user()->id_user != $user->id_user)
+                                <form action="{{ route('users.destroy', $user) }}" method="POST" style="display:inline-block;">
+                                    @csrf
+                                    @method('DELETE')
+                                 
+                                </form>
+                            @endif
+                        </td>
+                    </tr>
+                @endif
             @endforeach
         </tbody>
     </table>

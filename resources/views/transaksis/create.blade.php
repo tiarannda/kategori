@@ -1,8 +1,11 @@
 @extends('layouts.main')
 
+@section('page-title', 'Tambah Transaksi')
+
+@section('transaksi_active', 'active')
+
 @section('content')
 <div class="container">
-    <h1>Tambah Transaksi</h1>
 
     @if ($errors->any())
         <div class="alert alert-danger">

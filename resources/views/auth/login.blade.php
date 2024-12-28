@@ -91,6 +91,20 @@
             text-align: center;
         }
 
+        /* Tombol tambahan */
+        .btn-link {
+            background: none;
+            border: none;
+            color: #007bff;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .btn-link:hover {
+            opacity: 0.8;
+        }
+
         /* Styling untuk gambar */
         .image-container {
             position: absolute;
@@ -131,6 +145,13 @@
                 </div>
                 <button type="submit" class="btn-primary">Login</button>
             </form>
+
+            <!-- Tombol daftar -->
+            <div class="text-center" style="margin-top: 1.5rem;">
+                <p>Belum punya akun?
+                    <a href="{{ route('register') }}" class="btn-link">Daftar</a>
+                </p>
+            </div>
 
             <!-- Gambar animasi -->
             <div class="image-container">

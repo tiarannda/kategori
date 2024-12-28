@@ -8,38 +8,15 @@
 
 @section('content')
     <div class="container">
-        <!-- Tombol Tambah Laporan -->
-        <div class="d-flex justify-content-between align-items-center mt-4">
-            <a href="{{ route('laporans.create') }}" class="btn btn-primary">Tambah Laporan</a>
-        </div>
-
-        <!-- Form Kirim Laporan ke Dropbox -->
-        <h4 class="mt-4">Kirim Data Laporan ke Dropbox</h4>
-        <form action="{{ route('laporans.sendToDropbox') }}" method="POST">
-            @csrf
-            <div class="form-group">
-                <label for="tanggal">Pilih Tanggal:</label>
-                <input type="date" name="tanggal" id="tanggal" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-success">Kirim Laporan</button>
-        </form>
-
-        @if (session('success'))
-            <div class="alert alert-success mt-3">
-                {{ session('success') }}
-            </div>
-        @elseif(session('error'))
-            <div class="alert alert-danger mt-3">
-                {{ session('error') }}
+        <!-- Tombol Tambah Laporan hanya untuk admin -->
+        @if (Auth::user()->role == 'admin')
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <a href="{{ route('laporans.create') }}" class="btn btn-primary">Tambah Laporan</a>
             </div>
         @endif
-
-        <!-- Garis Pemisah -->
-        <hr class="mt-5 mb-4">
-
         <!-- Daftar Laporan Bulanan -->
         @foreach ($laporans as $bulan => $laporanPerBulan)
-            <h3 class="mt-5">{{ $bulan }}</h3>
+            <h3 class="mt-4">{{ $bulan }}</h3>
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -64,18 +41,45 @@
                             <td>
                                 <a href="{{ route('laporans.show', $laporan->id_laporan) }}"
                                     class="btn btn-info btn-sm">Detail</a>
-                                <form action="{{ route('laporans.destroy', $laporan->id_laporan) }}" method="POST"
-                                    style="display: inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Hapus laporan ini?')">Hapus</button>
-                                </form>
+
+                                <!-- Tombol Hapus hanya untuk admin -->
+                                @if (Auth::user()->role == 'admin')
+                                    <form action="{{ route('laporans.destroy', $laporan->id_laporan) }}" method="POST"
+                                        style="display: inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Hapus laporan ini?')">Hapus</button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         @endforeach
+
+        <!-- Form Kirim Laporan ke Dropbox hanya untuk admin -->
+        @if (Auth::user()->role == 'admin')
+            <h4 class="mt-5">Kirim Data Laporan ke Dropbox</h4>
+            <form action="{{ route('laporans.sendToDropbox') }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label for="tanggal">Pilih Tanggal:</label>
+                    <input type="date" name="tanggal" id="tanggal" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-success">Kirim Laporan</button>
+            </form>
+        @endif
+
+        @if (session('success'))
+            <div class="alert alert-success mt-3">
+                {{ session('success') }}
+            </div>
+        @elseif(session('error'))
+            <div class="alert alert-danger mt-3">
+                {{ session('error') }}
+            </div>
+        @endif
     </div>
 @endsection

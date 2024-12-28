@@ -1,7 +1,10 @@
 @extends('layouts.main')
 
+@section('page-title', 'Tambah User')
+
+@section('user_active', 'active')
+
 @section('content')
-<h1>Tambah User</h1>
 <form action="{{ route('users.store') }}" method="POST">
     @csrf
     <div class="form-group">
@@ -23,6 +26,13 @@
     <div class="form-group">
         <label>Konfirmasi Password</label>
         <input type="password" name="password_confirmation" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label>Role</label>
+        <select name="role" class="form-control" required>
+            <option value="admin">Admin</option>
+            <option value="karyawan">Karyawan</option>
+        </select>
     </div>
     <button type="submit" class="btn btn-primary">Simpan</button>
 </form>
