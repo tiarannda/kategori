@@ -1,99 +1,119 @@
-from flask import Flask, request, jsonify
-from datetime import datetime
-import mysql.connector
+from flask import Flask, render_template
+import pandas as pd
+import pymysql
+from decimal import Decimal
 
 app = Flask(__name__)
 
+# Database connection
 def get_db_connection():
-    """
-    Fungsi untuk koneksi ke database MySQL.
-    """
-    conn = mysql.connector.connect(
+    return pymysql.connect(
         host='localhost',
         user='root',
-        password='',  # Ganti dengan password MySQL Anda
-        database='iCareService'
+        password='',
+        database='iCareService',
+        cursorclass=pymysql.cursors.DictCursor
     )
-    return conn
 
-@app.route('/get_data', methods=['GET'])
-def get_data():
-    """
-    Rute untuk mendapatkan data barang dan total penjualan dari laporan berdasarkan bulan dan tahun tertentu.
-    """
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-
-    # Ambil parameter bulan dan tahun dari query string, default ke bulan dan tahun saat ini
-    month = int(request.args.get('month', datetime.now().month))
-    year = int(request.args.get('year', datetime.now().year))
-
+# Fetch data from database
+def fetch_data():
+    connection = get_db_connection()
     try:
-        # Ambil semua barang dari tabel barangs
-        cursor.execute('SELECT id_barang, nama_barang, harga, stok_saat_ini FROM barangs')
-        barang_data = cursor.fetchall()
+        with connection.cursor() as cursor:
+            # Fetch data from barangs table
+            cursor.execute("SELECT id_barang, nama_barang AS nama, harga FROM barangs")
+            barangs = pd.DataFrame(cursor.fetchall())
 
-        # Ambil total penjualan berdasarkan laporan bulanan
-        cursor.execute('''
-            SELECT id_barang, SUM(total_barang_keluar) AS total_barang_keluar
-            FROM laporans
-            WHERE MONTH(tanggal_laporan) = %s AND YEAR(tanggal_laporan) = %s
-            GROUP BY id_barang
-        ''', (month, year))
-        laporan_data = {row['id_barang']: row['total_barang_keluar'] for row in cursor.fetchall()}
+            # Fetch data from transaksis table for C2 (beli) and C3 (jual)
+            cursor.execute("SELECT id_barang, SUM(jumlah_barang) AS jumlah_beli FROM transaksis WHERE tipe_transaksi = 'beli' GROUP BY id_barang")
+            barang_masuk = pd.DataFrame(cursor.fetchall())
 
-        # Gabungkan data barang dengan total penjualan
-        for barang in barang_data:
-            barang['C3'] = laporan_data.get(barang['id_barang'], 0)  # Isi 0 jika tidak ada data
+            cursor.execute("SELECT id_barang, SUM(jumlah_barang) AS jumlah_jual FROM transaksis WHERE tipe_transaksi = 'jual' GROUP BY id_barang")
+            barang_keluar = pd.DataFrame(cursor.fetchall())
 
-    except mysql.connector.Error as err:
-        return jsonify({'error': str(err)}), 500
+            return barangs, barang_masuk, barang_keluar
     finally:
-        cursor.close()
-        conn.close()
+        connection.close()
 
-    return jsonify(barang_data)
+# Prepare decision matrix
+def prepare_decision_matrix():
+    barangs, barang_masuk, barang_keluar = fetch_data()
 
-@app.route('/hitung', methods=['POST'])
-def hitung_saw():
-    """
-    Rute untuk menghitung skor SAW berdasarkan alternatif dan bobot yang diberikan.
-    """
-    data = request.get_json()
-    alternatif = data.get('alternatif', [])
-    bobot = data.get('bobot', {})
+    # Merge barang masuk and keluar into decision matrix
+    decision_matrix = barangs.copy()
+    decision_matrix = decision_matrix.merge(barang_masuk, on="id_barang", how="left")
+    decision_matrix = decision_matrix.merge(barang_keluar, on="id_barang", how="left", suffixes=("_beli", "_jual"))
 
-    if not alternatif or not bobot:
-        return jsonify({'error': 'Data alternatif atau bobot tidak ditemukan!'}), 400
+    # Replace NaN with 0 for C2 and C3
+    decision_matrix.fillna({"jumlah_beli": 0, "jumlah_jual": 0}, inplace=True)
 
-    try:
-        # Normalisasi data
-        max_c1 = max([item['C1'] for item in alternatif])
-        max_c2 = min([item['C2'] for item in alternatif])
-        max_c3 = max([item['C3'] for item in alternatif])
+    # Rename columns
+    decision_matrix.rename(columns={"harga": "C1", "jumlah_beli": "C2", "jumlah_jual": "C3"}, inplace=True)
 
-        hasil = []
-        for item in alternatif:
-            normalisasi_c1 = item['C1'] / max_c1
-            normalisasi_c2 = item['C2'] / max_c2
-            normalisasi_c3 = item['C3'] / max_c3
-            skor_saw = (
-                normalisasi_c1 * bobot.get('C1', 0) +
-                normalisasi_c2 * bobot.get('C2', 0) +
-                normalisasi_c3 * bobot.get('C3', 0)
-            )
-            hasil.append({
-                'nama': item['nama_barang'],
-                'C1': item['C1'],
-                'C2': item['C2'],
-                'C3': item['C3'],
-                'skor_saw': skor_saw
-            })
+    return decision_matrix
 
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+# Normalize decision matrix
+def normalize_column(column, maximize=True):
+    # Avoid division by zero
+    min_val = column.min()
+    max_val = column.max()
 
-    return jsonify(hasil)
+    if maximize:
+        return column / max_val
+    else:
+        if min_val == 0:
+            return column  # or handle this case differently (e.g., return NaN or a fixed value)
+        else:
+            return min_val / column
+
+def normalize_and_calculate_scores(decision_matrix):
+    normalized_matrix = decision_matrix.copy()
+    normalized_matrix["C1"] = normalize_column(decision_matrix["C1"], maximize=True)
+    normalized_matrix["C2"] = normalize_column(decision_matrix["C2"], maximize=False)
+    normalized_matrix["C3"] = normalize_column(decision_matrix["C3"], maximize=True)
+
+    # AHP weights (user-defined or calculated via pairwise comparison)
+    weights = {
+        "C1": 0.5,  # Price importance
+        "C2": 0.3,  # Minimum stock importance
+        "C3": 0.2   # Maximum sales importance
+    }
+
+    # Calculate SAW scores (use Decimal to avoid float-Decimal issues)
+    normalized_matrix["Score"] = (
+        normalized_matrix["C1"].apply(Decimal) * Decimal(str(weights["C1"])) +
+        normalized_matrix["C2"].apply(Decimal) * Decimal(str(weights["C2"])) +
+        normalized_matrix["C3"].apply(Decimal) * Decimal(str(weights["C3"]))
+    )
+
+    # Round C1, C2, C3, and Score to 2 decimal places
+    normalized_matrix["C1"] = normalized_matrix["C1"].round(2)
+    normalized_matrix["C2"] = normalized_matrix["C2"].round(2)
+    normalized_matrix["C3"] = normalized_matrix["C3"].round(2)
+    normalized_matrix["Score"] = normalized_matrix["Score"].round(2)
+
+    # Rank items
+    normalized_matrix.sort_values(by="Score", ascending=False, inplace=True)
+    return normalized_matrix
+
+def create_dashboard_data():
+    decision_matrix = prepare_decision_matrix()
+    normalized_matrix = normalize_and_calculate_scores(decision_matrix)
+
+    # Ambil barang dengan skor tertinggi
+    best_item = normalized_matrix.iloc[0].to_dict()  # Ambil item dengan skor tertinggi (pertama setelah diurutkan)
+
+    return {
+        "decision_matrix": decision_matrix.to_dict(orient="records"),
+        "normalized_matrix": normalized_matrix.to_dict(orient="records"),
+        "best_item": best_item  # Menambahkan data barang dengan skor tertinggi
+    }
+
+
+@app.route('/')
+def dashboard():
+    data = create_dashboard_data()
+    return render_template('index.html', data=data)
 
 if __name__ == '__main__':
     app.run(debug=True)

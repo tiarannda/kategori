@@ -3,97 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAW Perhitungan Otomatis</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <title>Dashboard</title>
 </head>
 <body>
-    <div class="container mt-5">
-        <h1 class="text-center">Perhitungan SAW Otomatis</h1>
-        <div class="d-flex justify-content-between align-items-center mt-4">
-            <label for="month" class="form-label">Pilih Bulan:</label>
-            <select id="month" class="form-select w-auto">
-                <option value="1">Januari</option>
-                <option value="2">Februari</option>
-                <option value="3">Maret</option>
-                <option value="4">April</option>
-                <option value="5">Mei</option>
-                <option value="6">Juni</option>
-                <option value="7">Juli</option>
-                <option value="8">Agustus</option>
-                <option value="9">September</option>
-                <option value="10">Oktober</option>
-                <option value="11">November</option>
-                <option value="12">Desember</option>
-            </select>
-            <button id="btnFetchData" class="btn btn-secondary">Ambil Data</button>
-        </div>
-        <div class="mt-4">
-            <button id="btnHitung" class="btn btn-primary" disabled>Hitung</button>
-        </div>
-        <div class="mt-5">
-            <h2>Hasil Perhitungan</h2>
-            <table class="table table-striped" id="hasilTable">
-                <thead>
-                    <tr>
-                        <th>Nama Barang</th>
-                        <th>Harga (C1)</th>
-                        <th>Stok (C2)</th>
-                        <th>Penjualan (C3)</th>
-                        <th>Skor SAW</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Hasil akan ditampilkan di sini -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <script>
-        let dataAlternatif = [];
-        const bobot = { C1: 0.4, C2: 0.3, C3: 0.3 };
+    <h1>Dashboard</h1>
 
-        document.getElementById('btnFetchData').addEventListener('click', function () {
-            const month = document.getElementById('month').value;
-            document.querySelector('#hasilTable tbody').innerHTML = '<tr><td colspan="5">Loading...</td></tr>';
+    <h2>Decision Matrix</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nama Barang</th>
+                <th>Harga (C1)</th>
+                <th>Barang Masuk (C2)</th>
+                <th>Barang Keluar (C3)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data['decision_matrix'] %}
+            <tr>
+                <td>{{ row['nama'] }}</td>
+                <td>{{ "%.2f"|format(row['C1']) }}</td>  <!-- Menampilkan C1 dengan 2 angka desimal -->
+                <td>{{ "%.2f"|format(row['C2']) }}</td>  <!-- Menampilkan C2 dengan 2 angka desimal -->
+                <td>{{ "%.2f"|format(row['C3']) }}</td>  <!-- Menampilkan C3 dengan 2 angka desimal -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-            fetch(`/get_data?month=${month}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length === 0) {
-                        document.querySelector('#hasilTable tbody').innerHTML = '<tr><td colspan="5">Tidak ada data untuk bulan ini</td></tr>';
-                    } else {
-                        dataAlternatif = data;
-                        document.getElementById('btnHitung').disabled = false;
-                    }
-                })
-                .catch(error => console.error('Error fetching data:', error));
-        });
+    <h2>Normalized Matrix with Scores</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nama Barang</th>
+                <th>C1</th>
+                <th>C2</th>
+                <th>C3</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data['normalized_matrix'] %}
+            <tr>
+                <td>{{ row['nama'] }}</td>
+                <td>{{ "%.2f"|format(row['C1']) }}</td>  <!-- Menampilkan C1 dengan 2 angka desimal -->
+                <td>{{ "%.2f"|format(row['C2']) }}</td>  <!-- Menampilkan C2 dengan 2 angka desimal -->
+                <td>{{ "%.2f"|format(row['C3']) }}</td>  <!-- Menampilkan C3 dengan 2 angka desimal -->
+                <td>{{ "%.2f"|format(row['Score']) }}</td> <!-- Menampilkan Score dengan 2 angka desimal -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-        document.getElementById('btnHitung').addEventListener('click', function () {
-            fetch('/hitung', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ alternatif: dataAlternatif, bobot })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const tbody = document.querySelector('#hasilTable tbody');
-                tbody.innerHTML = '';
-
-                data.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.nama}</td>
-                        <td>${row.C1}</td>
-                        <td>${row.C2}</td>
-                        <td>${row.C3 !== null ? row.C3 : 'Kosong'}</td>
-                        <td>${row.skor_saw.toFixed(2)}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            })
-            .catch(error => console.error('Error calculating SAW:', error));
-        });
-    </script>
+    <!-- Menampilkan Barang dengan Skor Tertinggi -->
+    <h2>Barang dengan Skor Tertinggi</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nama Barang</th>
+                <th>Harga (C1)</th>
+                <th>Barang Masuk (C2)</th>
+                <th>Barang Keluar (C3)</th>
+                <th>Skor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ data['best_item']['nama'] }}</td>
+                <td>{{ "%.2f"|format(data['best_item']['C1']) }}</td> <!-- Menampilkan C1 dengan 2 angka desimal -->
+                <td>{{ "%.2f"|format(data['best_item']['C2']) }}</td> <!-- Menampilkan C2 dengan 2 angka desimal -->
+                <td>{{ "%.2f"|format(data['best_item']['C3']) }}</td> <!-- Menampilkan C3 dengan 2 angka desimal -->
+                <td>{{ "%.2f"|format(data['best_item']['Score']) }}</td> <!-- Menampilkan Score dengan 2 angka desimal -->
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>
