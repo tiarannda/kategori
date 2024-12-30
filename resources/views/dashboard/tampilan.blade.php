@@ -70,18 +70,17 @@
           </li>
 
          <!-- Akun menu ditampilkan untuk admin dan karyawan -->
-<li class="nav-item">
-    @if(auth()->user()->role == 'admin')
-      <a class="nav-link" href="{{ route('users.index') }}">
-        <p>Akun</p>
-      </a>
-    @else
-      <a class="nav-link" href="{{ route('users.show', auth()->user()->id_user) }}">
-        <p>Akun</p>
-      </a>
-    @endif
-  </li>
-
+          <li class="nav-item">
+              @if(auth()->user()->role == 'admin')
+              <a class="nav-link" href="{{ route('users.index') }}">
+                <p>Akun</p>
+              </a>
+              @else
+              <a class="nav-link" href="{{ route('users.show', auth()->user()->id_user) }}">
+                <p>Akun</p>
+              </a>
+              @endif
+          </li>
         </ul>
       </div>
     </div>
@@ -118,9 +117,9 @@
             <ul class="navbar-nav">
               <!-- Logout Button -->
               <li class="nav-item">
-                <form action="{{ route('logout') }}" method="POST">
+                <form action="{{ route('logout') }}" method="POST" id="logout-form">
                   @csrf
-                  <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+                  <button type="button" class="btn btn-danger btn-sm" onclick="konfirmasiLogout()">Logout</button>
                 </form>
               </li>
             </ul>
@@ -174,6 +173,13 @@
     $(document).ready(function() {
       demo.initChartsPages();
     });
+
+    // Fungsi untuk konfirmasi logout
+    function konfirmasiLogout() {
+        if (confirm("Apakah Anda yakin ingin logout?")) {
+            document.getElementById('logout-form').submit();
+        }
+    }
   </script>
 </body>
 

@@ -31,109 +31,87 @@
 <body>
     <div class="wrapper">
         <!-- Sidebar -->
-
-            <div class="sidebar" data-color="black" data-active-color="danger">
-                <div class="logo">
-                    <a href="#" class="simple-text logo-mini">
-                        <div class="logo-image-small">
-                            <img src="{{ asset('assets/img/logo_iCare.png') }}">
-                        </div>
-                    </a>
-                    <a href="#" class="simple-text logo-normal">
-                        iCare Service
-                    </a>
-                </div>
-                <div class="sidebar-wrapper">
-                    <ul class="nav">
-                        <li class="nav-item @yield('dashboard_active')">
-                            <a class="nav-link" href="{{ route('dashboard') }}">
-                                <p>Halaman</p>
+        <div class="sidebar" data-color="black" data-active-color="danger">
+            <div class="logo">
+                <a href="#" class="simple-text logo-mini">
+                    <div class="logo-image-small">
+                        <img src="{{ asset('assets/img/logo_iCare.png') }}">
+                    </div>
+                </a>
+                <a href="#" class="simple-text logo-normal">
+                    iCare Service
+                </a>
+            </div>
+            <div class="sidebar-wrapper">
+                <ul class="nav">
+                    <li class="nav-item @yield('dashboard_active')">
+                        <a class="nav-link" href="{{ route('dashboard') }}">
+                            <p>Halaman</p>
+                        </a>
+                    </li>
+                    @if(Auth::user()->role == 'admin')
+                        <li class="nav-item @yield('barang_active')">
+                            <a class="nav-link" href="{{ route('barang.index') }}">
+                                <p>Barang</p>
                             </a>
                         </li>
-                        @if(Auth::user()->role == 'admin')
-                            <li class="nav-item @yield('barang_active')">
-                                <a class="nav-link" href="{{ route('barang.index') }}">
-                                    <p>Barang</p>
-                                </a>
-                            </li>
-                            <li class="nav-item @yield('kategori_active')">
-                                <a class="nav-link" href="{{ route('kategoris.index') }}">
-                                    <p>Kategori</p>
-                                </a>
-                            </li>
-                            <li class="nav-item @yield('transaksi_active')">
-                                <a class="nav-link" href="{{ route('transaksis.index') }}">
-                                    <p>Transaksi</p>
-                                </a>
-                            </li>
-                            <li class="nav-item @yield('laporan_active')">
-                                <a class="nav-link" href="{{ route('laporans.index') }}">
-                                    <p>Laporan</p>
-                                </a>
-                            </li>
-                            <li class="nav-item @yield('user_active')">
-                                <a class="nav-link" href="{{ route('users.index') }}">
-                                    <p>Akun</p>
-                                </a>
-                            </li>
-                        @endif
-                        @if(Auth::user()->role == 'karyawan')
-                            <li class="nav-item @yield('barang_active')">
-                                <a class="nav-link" href="{{ route('barang.index') }}">
-                                    <p>Barang</p>
-                                </a>
-                            </li>
-                            <li class="nav-item @yield('transaksi_active')">
-                                <a class="nav-link" href="{{ route('transaksis.index') }}">
-                                    <p>Transaksi</p>
-                                </a>
-                            </li>
-                            <li class="nav-item @yield('laporan_active')">
-                                <a class="nav-link" href="{{ route('laporans.index') }}">
-                                    <p>Laporan</p>
-                                </a>
-                            </li>
-                            <li class="nav-item @yield('user_active')">
-                                <a class="nav-link" href="{{ route('users.show', Auth::user()->id_user) }}">
-                                    <p>Akun</p>
-                                </a>
-                            </li>
-                        @endif
-                    </ul>
-                </div>
+                        <li class="nav-item @yield('kategori_active')">
+                            <a class="nav-link" href="{{ route('kategoris.index') }}">
+                                <p>Kategori</p>
+                            </a>
+                        </li>
+                        <li class="nav-item @yield('transaksi_active')">
+                            <a class="nav-link" href="{{ route('transaksis.index') }}">
+                                <p>Transaksi</p>
+                            </a>
+                        </li>
+                        <li class="nav-item @yield('laporan_active')">
+                            <a class="nav-link" href="{{ route('laporans.index') }}">
+                                <p>Laporan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item @yield('user_active')">
+                            <a class="nav-link" href="{{ route('users.index') }}">
+                                <p>Akun</p>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
             </div>
-      
+        </div>
+
         <!-- End Sidebar -->
 
         <div class="main-panel">
             <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent">
-    <div class="container-fluid">
-        <div class="navbar-wrapper">
-            <a class="navbar-brand" href="#">@yield('page-title')</a>
-        </div>
-        <div class="collapse navbar-collapse justify-content-end" id="navigation">
-            <form id="search-form" action="#" method="GET">
-                <div class="input-group no-border">
-                    <input type="text" class="form-control" id="search-input" placeholder="Search..." />
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <i class="nc-icon nc-zoom-split"></i>
-                        </div>
+            <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent">
+                <div class="container-fluid">
+                    <div class="navbar-wrapper">
+                        <a class="navbar-brand" href="#">@yield('page-title')</a>
+                    </div>
+                    <div class="collapse navbar-collapse justify-content-end" id="navigation">
+                        <form id="search-form" action="#" method="GET">
+                            <div class="input-group no-border">
+                                <input type="text" class="form-control" id="search-input" placeholder="Search..." />
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <i class="nc-icon nc-zoom-split"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <!-- Logout Button with Confirmation -->
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="button" onclick="confirmLogout()" class="btn btn-danger btn-sm">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </form>
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-danger btn-sm">Logout</button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+            </nav>
             <!-- End Navbar -->
 
             <!-- Content -->
@@ -155,49 +133,22 @@
     <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/perfect-scrollbar.jquery.min.js') }}"></script>
     <script src="{{ asset('assets/js/paper-dashboard.min.js?v=2.0.1') }}" type="text/javascript"></script>
+
+    <!-- Logout Confirmation Script -->
     <script>
-        // Fungsi untuk menandai kata yang dicari
-        function highlightSearch(keyword) {
-            // Menghapus tanda highlight sebelumnya
-            const highlighted = document.querySelectorAll('.highlight');
-            highlighted.forEach(element => {
-                element.classList.remove('highlight');
-            });
-
-            if (keyword.trim() === '') return;
-
-            // Menandai kata yang ditemukan di dalam teks
-            const regex = new RegExp(`(${keyword})`, 'gi');
-
-            // Menambahkan highlight pada kata yang ditemukan
-            const elements = document.body.querySelectorAll('p, span, div');  // Tentukan elemen yang akan dicari
-
-            elements.forEach(element => {
-                element.innerHTML = element.innerHTML.replace(regex, (match) => {
-                    return `<span class="highlight">${match}</span>`;
-                });
-            });
-        }
-
-        // Menangani pencarian hanya saat menekan tombol Enter
-        document.getElementById('search-input').addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                const searchTerm = this.value;
-                highlightSearch(searchTerm);
+        function confirmLogout() {
+            var confirmAction = confirm("Apakah Anda yakin ingin logout?");
+            if (confirmAction) {
+                document.getElementById('logout-form').submit();
             }
-        });
-        </script>
+        }
+    </script>
 
-        <style>
-        /* Gaya untuk menandai kata yang dicari */
+    <style>
         .highlight {
             background-color: yellow;
             color: black;
         }
-        </style>
-
-        <!-- Input pencarian -->
-        <input type="text" id="search-input" placeholder="Cari...">
-
+    </style>
 </body>
 </html>
