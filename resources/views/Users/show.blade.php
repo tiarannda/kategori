@@ -13,7 +13,7 @@
         <p><strong>Username:</strong> {{ $user->username }}</p>
     @elseif (Auth::user()->role == 'admin')
         <!-- Admin bisa melihat detail akun siapapun -->
-        <h3>Detail Akun</h3>
+       
         <p><strong>Nama:</strong> {{ $user->name }}</p>
         <p><strong>Email:</strong> {{ $user->email }}</p>
         <p><strong>Username:</strong> {{ $user->username }}</p>

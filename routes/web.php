@@ -9,6 +9,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PerhitunganController;
 use App\Http\Middleware\KaryawanMiddleware;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Storage;
@@ -67,7 +68,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 Route::resource('laporans', LaporanController::class)->middleware('auth');
 Route::get('/laporans', [LaporanController::class, 'index'])->name('laporans.index')->middleware('auth');
 
-
+//route dropbox
 Route::post('/laporans/send-to-dropbox', [LaporanController::class, 'sendLaporanToDropbox'])->name('laporans.sendToDropbox')->middleware('auth');
 
 // route tes
@@ -76,5 +77,7 @@ Route::get('/dropbox/authorize', [DropboxController::class, 'authorize'])->name(
 Route::get('/dropbox/callback', [DropboxController::class, 'callback'])->name('dropbox.callback')->middleware('auth');
 Route::get('/laporan', [DropboxController::class, 'listFiles'])->name('laporan.index')->middleware('auth');
 
+//route perhitungan
+Route::get('/perhitungan/hitungSAW', [PerhitunganController::class, 'hitungSAW'])->name('perhitungan.hitungSAW');
 
 

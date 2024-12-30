@@ -136,8 +136,68 @@
             </div>
         </div>
     </div>
+    <!-- Perhitungan Tambahan -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Barang yang Harus di Re-Stock</h5>
+                    <small>Perhitungan untuk bulan: {{ date('F', mktime(0, 0, 0, $month, 10)) }} {{ $year }}</small>
+                </div>
+                <div class="card-body">
+                    <!-- Form untuk memilih bulan dan tahun -->
+                    <form id="filterForm" method="GET" action="{{ route('perhitungan.hitungSAW') }}">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="month">Pilih Bulan:</label>
+                                <select id="month" name="month" class="form-control">
+                                    @for ($i = 1; $i <= 12; $i++)
+                                        <option value="{{ $i }}" {{ $i == old('month', $month) ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $i, 10)) }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="year">Pilih Tahun:</label>
+                                <select id="year" name="year" class="form-control">
+                                    @for ($i = 2020; $i <= date('Y'); $i++)
+                                        <option value="{{ $i }}" {{ $i == old('year', $year) ? 'selected' : '' }}>{{ $i }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="col-md-3 align-self-end">
+                                <button type="submit" class="btn btn-primary">Hitung</button>
+                            </div>
+                        </div>
+                    </form>
 
-   
+                    <table class="table table-bordered mt-4">
+                        <thead>
+                            <tr>
+                                <th>Nama Barang</th>
+                                <th>Normalisasi Harga (C1)</th>
+                                <th>Normalisasi Stok (C2)</th>
+                                <th>Normalisasi Penjualan (C3)</th>
+                                <th>Skor SAW</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($hasil as $row)
+                                <tr>
+                                    <td>{{ $row['nama'] }}</td>
+                                    <td>{{ number_format($row['C1_normalisasi'], 2) }}</td>
+                                    <td>{{ number_format($row['C2_normalisasi'], 2) }}</td>
+                                    <td>{{ number_format($row['C3_normalisasi'], 2) }}</td>
+                                    <td>{{ number_format($row['skor_saw'], 2) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     </div>
 </div>
 

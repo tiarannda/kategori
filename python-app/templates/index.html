@@ -3,46 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAW Perhitungan</title>
+    <title>SAW Perhitungan Otomatis</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="text-center">Perhitungan SAW</h1>
-        <form id="formSAW" class="mt-4">
-            <div class="mb-3">
-                <label for="inputData" class="form-label">Masukkan Data Alternatif (JSON Format)</label>
-                <textarea id="inputData" class="form-control" rows="10">{
-    "alternatif": [
-        {"nama": "iPhone 6", "C1": 229000, "C2": 200000, "C3": 1},
-        {"nama": "iPhone 7", "C1": 279000, "C2": 200000, "C3": 4},
-        {"nama": "iPhone 8", "C1": 369000, "C2": 200000, "C3": 2},
-        {"nama": "iPhone 8+", "C1": 379000, "C2": 230000, "C3": 2},
-        {"nama": "iPhone X", "C1": 579000, "C2": 250000, "C3": 5},
-        {"nama": "iPhone XR", "C1": 599000, "C2": 250000, "C3": 7},
-        {"nama": "iPhone 11", "C1": 749000, "C2": 250000, "C3": 2},
-        {"nama": "iPhone 12", "C1": 1649000, "C2": 350000, "C3": 3},
-        {"nama": "iPhone 13", "C1": 1749000, "C2": 350000, "C3": 2},
-        {"nama": "iPhone 14", "C1": 2000000, "C2": 400000, "C3": 1}
-    ],
-    "bobot": {
-        "C1": 0.54,
-        "C2": 0.30,
-        "C3": 0.16
-    }
-}</textarea>
-            </div>
-            <button type="button" id="btnSubmit" class="btn btn-primary">Hitung</button>
-        </form>
+        <h1 class="text-center">Perhitungan SAW Otomatis</h1>
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <label for="month" class="form-label">Pilih Bulan:</label>
+            <select id="month" class="form-select w-auto">
+                <option value="1">Januari</option>
+                <option value="2">Februari</option>
+                <option value="3">Maret</option>
+                <option value="4">April</option>
+                <option value="5">Mei</option>
+                <option value="6">Juni</option>
+                <option value="7">Juli</option>
+                <option value="8">Agustus</option>
+                <option value="9">September</option>
+                <option value="10">Oktober</option>
+                <option value="11">November</option>
+                <option value="12">Desember</option>
+            </select>
+            <button id="btnFetchData" class="btn btn-secondary">Ambil Data</button>
+        </div>
+        <div class="mt-4">
+            <button id="btnHitung" class="btn btn-primary" disabled>Hitung</button>
+        </div>
         <div class="mt-5">
             <h2>Hasil Perhitungan</h2>
             <table class="table table-striped" id="hasilTable">
                 <thead>
                     <tr>
                         <th>Nama Barang</th>
-                        <th>Normalisasi C1</th>
-                        <th>Normalisasi C2</th>
-                        <th>Normalisasi C3</th>
+                        <th>Harga (C1)</th>
+                        <th>Stok (C2)</th>
+                        <th>Penjualan (C3)</th>
                         <th>Skor SAW</th>
                     </tr>
                 </thead>
@@ -51,71 +47,52 @@
                 </tbody>
             </table>
         </div>
-        <div class="mt-5">
-            <h2>Barang dengan Skor Tertinggi</h2>
-            <div id="bestItem" class="alert alert-success" role="alert">
-                <!-- Barang terbaik akan ditampilkan di sini -->
-                <strong>Belum ada data.</strong>
-            </div>
-        </div>
     </div>
     <script>
-        document.getElementById("btnSubmit").addEventListener("click", function () {
-            const inputData = document.getElementById("inputData").value;
+        let dataAlternatif = [];
+        const bobot = { C1: 0.4, C2: 0.3, C3: 0.3 };
 
-            // Kirim data ke server menggunakan fetch
+        document.getElementById('btnFetchData').addEventListener('click', function () {
+            const month = document.getElementById('month').value;
+            document.querySelector('#hasilTable tbody').innerHTML = '<tr><td colspan="5">Loading...</td></tr>';
+
+            fetch(`/get_data?month=${month}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        document.querySelector('#hasilTable tbody').innerHTML = '<tr><td colspan="5">Tidak ada data untuk bulan ini</td></tr>';
+                    } else {
+                        dataAlternatif = data;
+                        document.getElementById('btnHitung').disabled = false;
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+
+        document.getElementById('btnHitung').addEventListener('click', function () {
             fetch('/hitung', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: inputData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ alternatif: dataAlternatif, bobot })
             })
             .then(response => response.json())
             .then(data => {
-                const tbody = document.querySelector("#hasilTable tbody");
-                tbody.innerHTML = ""; // Kosongkan tabel sebelumnya
-
-                // Iterasi hasil dan tambahkan ke tabel
-                let maxScore = -Infinity;
-                let bestItem = null;
+                const tbody = document.querySelector('#hasilTable tbody');
+                tbody.innerHTML = '';
 
                 data.forEach(row => {
-                    // Tambahkan setiap alternatif ke tabel
-                    const tr = document.createElement("tr");
+                    const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${row.nama}</td>
-                        <td>${row.C1_normalisasi.toFixed(2)}</td>
-                        <td>${row.C2_normalisasi.toFixed(2)}</td>
-                        <td>${row.C3_normalisasi.toFixed(2)}</td>
+                        <td>${row.C1}</td>
+                        <td>${row.C2}</td>
+                        <td>${row.C3 !== null ? row.C3 : 'Kosong'}</td>
                         <td>${row.skor_saw.toFixed(2)}</td>
                     `;
                     tbody.appendChild(tr);
-
-                    // Cari barang dengan skor tertinggi
-                    if (row.skor_saw > maxScore) {
-                        maxScore = row.skor_saw;
-                        bestItem = row;
-                    }
                 });
-
-                // Tampilkan barang dengan skor tertinggi
-                const bestItemDiv = document.getElementById("bestItem");
-                if (bestItem) {
-                    bestItemDiv.innerHTML = `
-                        <strong>${bestItem.nama}</strong> adalah barang dengan skor tertinggi:
-                        <ul>
-                            <li>Skor SAW: ${bestItem.skor_saw.toFixed(2)}</li>
-                            <li>Normalisasi C1: ${bestItem.C1_normalisasi.toFixed(2)}</li>
-                            <li>Normalisasi C2: ${bestItem.C2_normalisasi.toFixed(2)}</li>
-                            <li>Normalisasi C3: ${bestItem.C3_normalisasi.toFixed(2)}</li>
-                        </ul>
-                    `;
-                }
             })
-            .catch(error => {
-                console.error("Terjadi kesalahan:", error);
-            });
+            .catch(error => console.error('Error calculating SAW:', error));
         });
     </script>
 </body>

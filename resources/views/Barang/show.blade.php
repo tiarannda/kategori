@@ -5,13 +5,12 @@
 
 @section('page-title', 'Detail Barang')
 
-@section('kategori_active', 'active')
+@section('barang_active', 'active')
 
 @section('content')
 <div class="container mt-4">
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title" style="font-family: 'Montserrat', sans-serif;">Detail Barang</h4>
         </div>
         <div class="card-body" style="font-family: 'Montserrat', sans-serif;">
             <p><strong>Nama Barang:</strong> {{ $barang->nama_barang }}</p>
