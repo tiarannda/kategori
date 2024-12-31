@@ -136,57 +136,37 @@
             </div>
         </div>
     </div>
-<!-- Perhitungan Barang Terlaris -->
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Barang Terlaris</h5>
-                <small>Perhitungan untuk bulan: {{ date('F', mktime(0, 0, 0, $month, 10)) }} {{ $year }}</small>
-            </div>
-            <div class="card-body">
-                <!-- Tabel Barang Terlaris -->
-                <table class="table table-bordered mt-4">
-                    <thead>
-                        <tr>
-                            <th>Nama Barang</th>
-                            <th>Harga</th>
-                            <th>Barang Masuk</th>
-                            <th>Barang Keluar</th>
-                            <th>Skor SAW</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($hasil as $row)
-                            <tr>
-                                <td>{{ $row['nama'] }}</td>
-                                <td>{{ number_format($row['C1_normalisasi'], 2) }}</td>
-                                <td>{{ number_format($row['C2_normalisasi'], 2) }}</td>
-                                <td>{{ number_format($row['C3_normalisasi'], 2) }}</td>
-                                <td>{{ number_format($row['skor_saw'], 2) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
 
-                <!-- Tampilkan Total Stok -->
-                <div class="row mt-4">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title">Total Stok Semua Barang</h5>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-title" style="font-size: smaller !important;">{{ number_format($totalStock, 0) }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+     <!-- perhitungan TPK -->
+     <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Lihat Barang Terlaris !</h5>
+                    <p>Barang Terlaris saat ini adalah : </p>
 
+   <form method="GET" action="{{ route('dashboard') }}">
+    <button type="submit" class="btn btn-primary">Hitung</button>
+</form>
+@if ($hasilTertinggi)
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nama Barang</th>
+                <th>Skor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ $hasilTertinggi['nama'] }}</td>
+
+                <td>{{ number_format($hasilTertinggi['skor_saw'], 2) }}</td>
+            </tr>
+        </tbody>
+    </table>
+@else
+    <p>Tidak ada data untuk ditampilkan.</p>
+@endif
 
     </div>
 </div>

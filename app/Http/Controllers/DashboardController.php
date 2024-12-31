@@ -68,39 +68,46 @@ class DashboardController extends Controller
 
         // Ambil total penjualan berdasarkan laporan bulan dan tahun yang dipilih
         $laporanData = Laporan::selectRaw('id_barang, SUM(total_barang_keluar) AS total_barang_keluar')
-            ->whereMonth('tanggal_laporan', $month)
-            ->whereYear('tanggal_laporan', $year)
-            ->groupBy('id_barang')
-            ->get()
-            ->keyBy('id_barang')
-            ->map(function ($laporan) {
-                return $laporan->total_barang_keluar;
-            });
-
-        // Data untuk perhitungan SAW
-        $hasil = $barangs->map(function ($barang) use ($laporanData) {
-            // Asumsi C1, C2, dan C3 adalah beberapa kriteria yang sudah dihitung sebelumnya
-            $C1_normalisasi = $barang->stok_saat_ini / Barang::max('stok_saat_ini');  // Normalisasi C1
-            $C2_normalisasi = $barang->harga / Barang::max('harga');  // Normalisasi C2
-            $C3_normalisasi = $laporanData->get($barang->id_barang, 0) / $laporanData->max();  // Normalisasi C3 berdasarkan penjualan
-
-            // Menghitung skor SAW
-            $skor_saw = $C1_normalisasi * 0.4 + $C2_normalisasi * 0.3 + $C3_normalisasi * 0.3;
-
-            return [
-                'nama' => $barang->nama_barang,
-                'C1_normalisasi' => $C1_normalisasi,
-                'C2_normalisasi' => $C2_normalisasi,
-                'C3_normalisasi' => $C3_normalisasi,
-                'skor_saw' => $skor_saw,
-            ];
+        ->whereMonth('tanggal_laporan', $month)
+        ->whereYear('tanggal_laporan', $year)
+        ->groupBy('id_barang')
+        ->get()
+        ->keyBy('id_barang')
+        ->map(function ($laporan) {
+            return $laporan->total_barang_keluar;
         });
+
+
+      // Hitung data SAW dan ambil hanya 1 hasil terbaik
+$hasilSAW = $barangs->map(function ($barang) use ($laporanData) {
+    $C1_normalisasi = $barang->stok_saat_ini / Barang::max('stok_saat_ini');
+    $C2_normalisasi = $barang->harga / Barang::max('harga');
+    $C3_normalisasi = $laporanData->get($barang->id_barang, 0) > 0
+        ? $laporanData->get($barang->id_barang, 0) / max($laporanData->max(), 1)
+        : 0;
+
+    $skor_saw = $C1_normalisasi * 0.4 + $C2_normalisasi * 0.3 + $C3_normalisasi * 0.3;
+
+    return [
+        'nama' => $barang->nama_barang,
+        'C1_normalisasi' => $C1_normalisasi,
+        'C2_normalisasi' => $C2_normalisasi,
+        'C3_normalisasi' => $C3_normalisasi,
+        'skor_saw' => $skor_saw,
+    ];
+});
+
+// Ambil hasil dengan skor tertinggi
+$hasilTertinggi = $hasilSAW->sortByDesc('skor_saw')->first();
+
 
         // Data warna untuk grafik
         $warnaPemasukan = 'rgba(75, 192, 192, 0.2)';
         $warnaPengeluaran = 'rgba(255, 99, 132, 0.2)';
 
         return view('dashboard.dashboard', [
+            'hasilTertinggi' => $hasilTertinggi,
+            'hasilSAW' => $hasilSAW,
             'totalStock' => $totalStock,
             'pendapatanBulanIni' => $pendapatanBulanIni,
             'pengeluaranBulanIni' => $pengeluaranBulanIni,
@@ -110,7 +117,6 @@ class DashboardController extends Controller
             'dataPengeluaran' => $dataPengeluaran,
             'warnaPemasukan' => $warnaPemasukan,
             'warnaPengeluaran' => $warnaPengeluaran,
-            'hasil' => $hasil, // Menambahkan hasil perhitungan SAW
             'month' => $month,
             'year' => $year
         ]);
