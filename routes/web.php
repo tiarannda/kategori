@@ -47,6 +47,11 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('users.index');
     });
 
+
+
+
+
+
     // Route resource untuk akun (admin bisa akses index dan CRUD)
     Route::resource('users', UserController::class)->except(['users.index']); // Hindari akses index untuk karyawan
     Route::put('/users/{id_user}', [UserController::class, 'users.update'])->name('users.update');

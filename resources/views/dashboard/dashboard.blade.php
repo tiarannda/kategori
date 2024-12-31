@@ -53,7 +53,7 @@
                 <div class="card-footer">
                     <hr>
                     <div class="stats">
-                        <i class="fa fa-calendar-o"></i> Last day
+                        <i class="fa fa-calendar-o"></i> Last month
                     </div>
                 </div>
             </div>
@@ -82,7 +82,7 @@
                 <div class="card-footer">
                     <hr>
                     <div class="stats">
-                        <i class="fa fa-clock-o"></i> In the last hour
+                        <i class="fa fa-clock-o"></i> In the last month
                     </div>
                 </div>
             </div>
@@ -122,7 +122,7 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title">Grafik Penjualan 7 Hari Terakhir</h5>
-                    <p class="card-category">Update Now</p>
+
                 </div>
                 <div class="card-body">
                     <canvas id="chartHours" width="400" height="100"></canvas>
@@ -174,30 +174,58 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    var ctx = document.getElementById('chartHours').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: @json($labels),
-            datasets: [
-                {
-                    label: 'Pemasukan',
-                    data: @json($dataPemasukan),
-                    backgroundColor: '{{ $warnaPemasukan }}',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Pengeluaran',
-                    data: @json($dataPengeluaran),
-                    backgroundColor: '{{ $warnaPengeluaran }}',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById('chartHours').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: @json($labels),
+                datasets: [
+                    {
+                        label: 'Total Pemasukan',
+                        data: @json($dataPemasukan),
+                        borderColor: 'green',
+                        fill: false,
+                    },
+                    {
+                        label: 'Total Pengeluaran',
+                        data: @json($dataPengeluaran),
+                        borderColor: 'red',
+                        fill: false,
+                    },
+                    {
+                        label: 'Total Barang Keluar',
+                        data: @json($dataBarangKeluar),
+                        borderColor: 'blue',
+                        fill: false,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tanggal'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Jumlah'
+                        }
+                    }
                 }
-            ]
-        }
+            }
+        });
     });
 </script>
-
 @endpush
+
+@stack('scripts')
+
+
+

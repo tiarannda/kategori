@@ -31,6 +31,8 @@ class UserController extends Controller
 
     // Debugging: Cek data yang akan disimpan
     \Log::info($validated);
+    \Log::info('Data yang diterima:', $request->all());
+
 
     // Menyimpan data user
     User::create([
@@ -52,51 +54,42 @@ class UserController extends Controller
 }
 
 public function update(Request $request, $id_user)
-{
-    $user = User::find($id_user);
+    {
+        // Mencari user berdasarkan id_user
+        $user = User::find($id_user);
 
-    // Validasi
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255',
-        'username' => 'required|string|max:255|unique:users,username,' . $user->id_user,
-        'mobile' => 'required|string|max:20',
-        'position' => 'required|string|max:255',
-        'gender' => 'required|in:M,F',
-        'password' => 'nullable|min:6|confirmed',
-        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    ]);
-
-    // Update data pengguna
-    $user->name = $request->name;
-    $user->email = $request->email;
-    $user->username = $request->username;
-    $user->mobile = $request->mobile;
-    $user->position = $request->position;
-    $user->gender = $request->gender;
-
-    // Update foto jika ada
-    if ($request->hasFile('photo')) {
-        // Hapus foto lama jika ada
-        if ($user->photo) {
-            Storage::delete('public/' . $user->photo);
+        // Jika user tidak ditemukan
+        if (!$user) {
+            return redirect()->route('users.index')->with('error', 'User tidak ditemukan');
         }
 
-        // Simpan foto baru
-        $path = $request->file('photo')->store('photos', 'public');
-        $user->photo = $path;
+        // Validasi input yang sesuai dengan validasi pada metode store
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id_user . ',id_user', // Tambahkan id_user di akhir
+            'username' => 'required|unique:users,username,' . $user->id_user . ',id_user',
+            'password' => 'nullable|min:6|confirmed',
+            'role' => 'required|in:admin,karyawan',
+        ]);
+
+
+        // Memperbarui data pengguna sesuai input yang telah divalidasi
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->username = $validated['username'];
+        $user->role = $validated['role'];  // Menambahkan role
+
+        // Mengupdate password jika diisi
+        if ($request->password) {
+            $user->password = bcrypt($validated['password']);
+        }
+
+        // Menyimpan perubahan data
+        $user->save();
+
+        // Redirect dengan pesan sukses
+        return redirect()->route('users.index')->with('success', 'Data pengguna berhasil diperbarui');
     }
-
-    // Update password jika diisi
-    if ($request->password) {
-        $user->password = bcrypt($request->password);
-    }
-
-    $user->save();
-
-    return redirect()->route('users.index')->with('success', 'Data pengguna berhasil diperbarui');
-}
-
 
 
 public function show($id_user)

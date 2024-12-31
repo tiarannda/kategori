@@ -38,13 +38,13 @@ class DashboardController extends Controller
         // Keuntungan bulan ini
         $untungBulanIni = $pendapatanBulanIni - $pengeluaranBulanIni;
 
-        // Mendapatkan data laporan harian untuk grafik
         $laporanHarian = Laporan::select(
             DB::raw("DATE(tanggal_laporan) as tanggal"),
             DB::raw("SUM(total_pemasukan) as pemasukan"),
-            DB::raw("SUM(total_pengeluaran) as pengeluaran")
+            DB::raw("SUM(total_pengeluaran) as pengeluaran"),
+            DB::raw("SUM(total_barang_keluar) as barang_keluar")
         )
-        ->whereBetween('tanggal_laporan', [$startOfMonth, $endOfMonth])
+        ->whereBetween('tanggal_laporan', [now()->subDays(6)->startOfDay(), now()->endOfDay()])
         ->groupBy('tanggal')
         ->orderBy('tanggal', 'asc')
         ->get();
@@ -53,6 +53,7 @@ class DashboardController extends Controller
         $labels = collect();
         $dataPemasukan = collect();
         $dataPengeluaran = collect();
+        $dataBarangKeluar = collect();
 
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i)->format('Y-m-d');
@@ -61,45 +62,37 @@ class DashboardController extends Controller
             $labels->push($date);
             $dataPemasukan->push($laporan ? $laporan->pemasukan : 0);
             $dataPengeluaran->push($laporan ? $laporan->pengeluaran : 0);
+            $dataBarangKeluar->push($laporan ? $laporan->barang_keluar : 0);
         }
 
-        // Mengambil data barang dan total penjualan untuk perhitungan SAW
+
+        // Ambil semua data barang
         $barangs = Barang::all();
 
-        // Ambil total penjualan berdasarkan laporan bulan dan tahun yang dipilih
-        $laporanData = Laporan::selectRaw('id_barang, SUM(total_barang_keluar) AS total_barang_keluar')
-        ->whereMonth('tanggal_laporan', $month)
-        ->whereYear('tanggal_laporan', $year)
-        ->groupBy('id_barang')
-        ->get()
-        ->keyBy('id_barang')
-        ->map(function ($laporan) {
-            return $laporan->total_barang_keluar;
+        // Mock data for laporanData (you need to ensure this comes from a valid source)
+        $laporanData = collect(); // Replace this with actual data as needed
+
+        // Hitung data SAW dan ambil hanya 1 hasil terbaik
+        $hasilSAW = $barangs->map(function ($barang) use ($laporanData) {
+            $C1_normalisasi = $barang->stok_saat_ini / Barang::max('stok_saat_ini');
+            $C2_normalisasi = $barang->harga / Barang::max('harga');
+            $C3_normalisasi = $laporanData->get($barang->id_barang, 0) > 0
+                ? $laporanData->get($barang->id_barang, 0) / max($laporanData->max(), 1)
+                : 0;
+
+            $skor_saw = $C1_normalisasi * 0.4 + $C2_normalisasi * 0.3 + $C3_normalisasi * 0.3;
+
+            return [
+                'nama' => $barang->nama_barang,
+                'C1_normalisasi' => $C1_normalisasi,
+                'C2_normalisasi' => $C2_normalisasi,
+                'C3_normalisasi' => $C3_normalisasi,
+                'skor_saw' => $skor_saw,
+            ];
         });
 
-
-      // Hitung data SAW dan ambil hanya 1 hasil terbaik
-$hasilSAW = $barangs->map(function ($barang) use ($laporanData) {
-    $C1_normalisasi = $barang->stok_saat_ini / Barang::max('stok_saat_ini');
-    $C2_normalisasi = $barang->harga / Barang::max('harga');
-    $C3_normalisasi = $laporanData->get($barang->id_barang, 0) > 0
-        ? $laporanData->get($barang->id_barang, 0) / max($laporanData->max(), 1)
-        : 0;
-
-    $skor_saw = $C1_normalisasi * 0.4 + $C2_normalisasi * 0.3 + $C3_normalisasi * 0.3;
-
-    return [
-        'nama' => $barang->nama_barang,
-        'C1_normalisasi' => $C1_normalisasi,
-        'C2_normalisasi' => $C2_normalisasi,
-        'C3_normalisasi' => $C3_normalisasi,
-        'skor_saw' => $skor_saw,
-    ];
-});
-
-// Ambil hasil dengan skor tertinggi
-$hasilTertinggi = $hasilSAW->sortByDesc('skor_saw')->first();
-
+        // Ambil hasil dengan skor tertinggi
+        $hasilTertinggi = $hasilSAW->sortByDesc('skor_saw')->first();
 
         // Data warna untuk grafik
         $warnaPemasukan = 'rgba(75, 192, 192, 0.2)';
@@ -115,11 +108,11 @@ $hasilTertinggi = $hasilSAW->sortByDesc('skor_saw')->first();
             'labels' => $labels,
             'dataPemasukan' => $dataPemasukan,
             'dataPengeluaran' => $dataPengeluaran,
+            'dataBarangKeluar' => $dataBarangKeluar,
             'warnaPemasukan' => $warnaPemasukan,
             'warnaPengeluaran' => $warnaPengeluaran,
             'month' => $month,
             'year' => $year
         ]);
     }
-
 }

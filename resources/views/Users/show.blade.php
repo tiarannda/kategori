@@ -11,12 +11,13 @@
         <p><strong>Nama:</strong> {{ $user->name }}</p>
         <p><strong>Email:</strong> {{ $user->email }}</p>
         <p><strong>Username:</strong> {{ $user->username }}</p>
+        <p><strong>Role:</strong> {{ $user->role }}</p>
     @elseif (Auth::user()->role == 'admin')
         <!-- Admin bisa melihat detail akun siapapun -->
-       
         <p><strong>Nama:</strong> {{ $user->name }}</p>
         <p><strong>Email:</strong> {{ $user->email }}</p>
         <p><strong>Username:</strong> {{ $user->username }}</p>
+        <p><strong>Role:</strong> {{ $user->role }}</p>
         <a href="{{ route('users.edit', $user) }}" class="btn btn-warning">Edit</a>
 
         <form action="{{ route('users.destroy', $user) }}" method="POST" style="display:inline-block;">
