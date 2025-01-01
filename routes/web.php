@@ -83,7 +83,7 @@ Route::get('/dropbox/callback', [DropboxController::class, 'callback'])->name('d
 Route::get('/laporan', [DropboxController::class, 'listFiles'])->name('laporan.index')->middleware('auth');
 
 //route perhitungan
-Route::get('/dashboard', [PerhitunganController::class, 'dashboard'])->name('dashboard');
+Route::get('/dashboar', [PerhitunganController::class, 'hitungSAW'])->name('hitungSAW');
 Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
 
