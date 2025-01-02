@@ -40,9 +40,9 @@ class DashboardController extends Controller
 
         $laporanHarian = Laporan::select(
             DB::raw("DATE(tanggal_laporan) as tanggal"),
-            DB::raw("SUM(total_pemasukan) as pemasukan"),
-            DB::raw("SUM(total_pengeluaran) as pengeluaran"),
-            DB::raw("SUM(total_barang_keluar) as barang_keluar")
+            DB::raw("SUM(total_pemasukan) as total_pemasukan"),
+            DB::raw("SUM(total_pengeluaran) as total_pengeluaran"),
+            DB::raw("SUM(total_barang_keluar) as total_barang_keluar")
         )
         ->whereBetween('tanggal_laporan', [now()->subDays(6)->startOfDay(), now()->endOfDay()])
         ->groupBy('tanggal')
@@ -61,7 +61,7 @@ class DashboardController extends Controller
 
             $labels->push($date);
             $dataPemasukan->push($laporan ? $laporan->total_pemasukan : 0);
-            $dataPengeluaran->push($laporan ? $laporan->_total_pengeluaran : 0);
+            $dataPengeluaran->push($laporan ? $laporan->total_pengeluaran : 0);
             $dataBarangKeluar->push($laporan ? $laporan->total_barang_keluar : 0);
         }
 

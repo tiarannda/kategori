@@ -2,7 +2,7 @@
 
 @section('page-title', 'Edit Data Barang')
 
-@section('kategori_active', 'active')
+@section('barang_active', 'active')
 
 @section('content')
 <div class="container mt-5">
