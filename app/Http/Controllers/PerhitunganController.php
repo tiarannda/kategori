@@ -22,10 +22,11 @@ class PerhitunganController extends Controller
         $maxHarga = Barang::max('harga');
         $minStok = Barang::min('stok_saat_ini');
         $laporan = Laporan::selectRaw('id_barang, SUM(total_barang_keluar) as total')
-            ->groupBy('id_barang')
-            ->pluck('total', 'id_barang');
+        ->groupBy('id_barang')
+        ->pluck('total', 'id_barang');
 
         $maxLaporan = $laporan->max();
+        // dd($maxHarga, $minStok, $maxLaporan);
 
         // Proses perhitungan SAW
         $hasil = $barangs->map(function ($barang) use ($weights, $maxHarga, $minStok, $laporan, $maxLaporan) {
@@ -45,6 +46,7 @@ class PerhitunganController extends Controller
         });
 
         $hasil = $hasil->sortByDesc('score');
+        dd($hasil);
 
         return view('dashboard.tampilan', compact('hasil'));
     }
