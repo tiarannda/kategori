@@ -60,9 +60,9 @@ class DashboardController extends Controller
             $laporan = $laporanHarian->firstWhere('tanggal', $date);
 
             $labels->push($date);
-            $dataPemasukan->push($laporan ? $laporan->pemasukan : 0);
-            $dataPengeluaran->push($laporan ? $laporan->pengeluaran : 0);
-            $dataBarangKeluar->push($laporan ? $laporan->barang_keluar : 0);
+            $dataPemasukan->push($laporan ? $laporan->total_pemasukan : 0);
+            $dataPengeluaran->push($laporan ? $laporan->_total_pengeluaran : 0);
+            $dataBarangKeluar->push($laporan ? $laporan->total_barang_keluar : 0);
         }
 
 
