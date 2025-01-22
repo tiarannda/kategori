@@ -71,6 +71,7 @@ class LaporanController extends Controller
             'total_barang_keluar' => $totalBarangKeluar,
             'total_barang_masuk' => $totalBarangMasuk,
             'id_user' => 1, // ID pengguna dari sesi login
+            // 'id_barang' => 1
         ]);
 
         return redirect()->route('laporans.index')->with('success', 'Laporan berhasil ditambahkan!');

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -66,7 +67,8 @@
             margin-bottom: 0.5rem;
         }
 
-        input, select {
+        input,
+        select {
             width: 100%;
             padding: 0.5rem;
             border: 1px solid #ccc;
@@ -93,7 +95,7 @@
 
         .image-container {
             position: absolute;
-            top: 0%;
+            top: 10%;
             right: 80%;
             width: 500px;
             height: auto;
@@ -105,6 +107,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
@@ -134,7 +137,8 @@
                 </div>
                 <div class="form-group">
                     <label for="password_confirmation">Konfirmasi Password:</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Confirm your password" required>
+                    <input type="password" id="password_confirmation" name="password_confirmation"
+                        placeholder="Confirm your password" required>
                 </div>
                 <div class="form-group">
                     <label for="role">Role:</label>
@@ -154,4 +158,5 @@
     </div>
 
 </body>
+
 </html>

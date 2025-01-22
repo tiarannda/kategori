@@ -155,7 +155,7 @@
 
             <!-- Gambar animasi -->
             <div class="image-container">
-                <img src="{{ asset('images/animasi_login.png') }}" alt="Login Animation">
+                <img src="{{ asset('images/loginfoto.jpg') }}" alt="Login Animation">
             </div>
         </div>
     </div>

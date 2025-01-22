@@ -3,50 +3,50 @@
 
 <head>
   <meta charset="utf-8" />
-  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/apple-icon.png') }}">
+  <link rel="icon" type="image/png" href="{{ asset('assets/img/favicon.png') }}">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <title> iCare Service </title>
-  <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no" name="viewport" />
   <!-- Fonts and icons -->
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
   <!-- CSS Files -->
-  <link href="../assets/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="../assets/css/paper-dashboard.css?v=2.0.1" rel="stylesheet" />
+  <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" />
+  <link href="{{ asset('assets/css/paper-dashboard.css?v=2.0.1') }}" rel="stylesheet" />
   <!-- CSS Just for demo purpose, don't include it in your project -->
-  <link href="../assets/demo/demo.css" rel="stylesheet" />
+  <link href="{{ asset('assets/demo/demo.css') }}" rel="stylesheet" />
 </head>
 
 <body class="">
-  <div class="wrapper ">
+  <div class="wrapper">
     <div class="sidebar" data-color="black" data-active-color="danger">
       <div class="logo">
-        <a href="https://www.creative-tim.com" class="simple-text logo-mini">
+        <a href="#" class="simple-text logo-mini">
           <div class="logo-image-small">
-            <img src="../assets/img/logo_iCare.png">
+            <img src="{{ asset('assets/img/logo_iCare.png') }}">
           </div>
         </a>
-        <a href="https://www.creative-tim.com" class="simple-text logo-normal">
+        <a href="#" class="simple-text logo-normal">
           iCare Service
         </a>
       </div>
       <div class="sidebar-wrapper">
         <ul class="nav">
           <li class="nav-item active">
-            <a class="nav-link" href="./dashboard.html">
+            <a class="nav-link" href="{{ url('/dashboard') }}">
               <p>Halaman</p>
             </a>
           </li>
-
-          <!-- Barang menu hanya ditampilkan jika role admin atau karyawan -->
+          @if(auth()->check())
+          <!-- Barang menu -->
           <li class="nav-item">
             <a class="nav-link" href="{{ route('barang.index') }}">
               <p>Barang</p>
             </a>
           </li>
 
-          <!-- Kategori menu hanya ditampilkan jika role admin -->
+          <!-- Kategori menu -->
           @if(auth()->user()->role == 'admin')
           <li class="nav-item">
             <a class="nav-link" href="{{ route('kategoris.index') }}">
@@ -55,32 +55,33 @@
           </li>
           @endif
 
-          <!-- Transaksi menu hanya ditampilkan jika role admin atau karyawan -->
+          <!-- Transaksi menu -->
           <li class="nav-item">
             <a class="nav-link" href="{{ route('transaksis.index') }}">
               <p>Transaksi</p>
             </a>
           </li>
 
-          <!-- Laporan menu hanya ditampilkan jika role admin atau karyawan -->
+          <!-- Laporan menu -->
           <li class="nav-item">
             <a class="nav-link" href="{{ route('laporans.index') }}">
               <p>Laporan</p>
             </a>
           </li>
 
-         <!-- Akun menu ditampilkan untuk admin dan karyawan -->
+          <!-- Akun menu -->
           <li class="nav-item">
-              @if(auth()->user()->role == 'admin')
-              <a class="nav-link" href="{{ route('users.index') }}">
-                <p>Akun</p>
-              </a>
-              @else
-              <a class="nav-link" href="{{ route('users.show', auth()->user()->id_user) }}">
-                <p>Akun</p>
-              </a>
-              @endif
+            @if(auth()->user()->role == 'admin')
+            <a class="nav-link" href="{{ route('users.index') }}">
+              <p>Akun</p>
+            </a>
+            @else
+            <a class="nav-link" href="{{ route('users.show', auth()->user()->id_user) }}">
+              <p>Akun</p>
+            </a>
+            @endif
           </li>
+          @endif
         </ul>
       </div>
     </div>
@@ -156,25 +157,20 @@
   </div>
 
   <!-- Core JS Files -->
-  <script src="../assets/js/core/jquery.min.js"></script>
-  <script src="../assets/js/core/popper.min.js"></script>
-  <script src="../assets/js/core/bootstrap.min.js"></script>
-  <script src="../assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
-  <!-- Google Maps Plugin -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
+  <script src="{{ asset('assets/js/core/jquery.min.js') }}"></script>
+  <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+  <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+  <script src="{{ asset('assets/js/plugins/perfect-scrollbar.jquery.min.js') }}"></script>
   <!-- Chart JS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Notifications Plugin -->
-  <script src="../assets/js/plugins/bootstrap-notify.js"></script>
-  <!-- Paper Dashboard Control Center -->
-  <script src="../assets/js/paper-dashboard.min.js?v=2.0.1" type="text/javascript"></script>
-  <script src="../assets/demo/demo.js"></script>
+  <script src="{{ asset('assets/js/plugins/bootstrap-notify.js') }}"></script>
+  <script src="{{ asset('assets/js/paper-dashboard.min.js?v=2.0.1') }}" type="text/javascript"></script>
   <script>
     $(document).ready(function() {
       demo.initChartsPages();
     });
 
-    // Fungsi untuk konfirmasi logout
     function konfirmasiLogout() {
         if (confirm("Apakah Anda yakin ingin logout?")) {
             document.getElementById('logout-form').submit();

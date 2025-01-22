@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
-use App\Models\Laporan;
+use App\Models\Bobot;
+use App\Models\Transaksi;
 use Illuminate\Http\Request;
 
 class PerhitunganController extends Controller
@@ -16,23 +17,31 @@ class PerhitunganController extends Controller
         }
 
         // Bobot kriteria
-        $weights = ['C1' => 0.5, 'C2' => 0.3, 'C3' => 0.2];
+        $weights = Bobot::all()->pluck('bobot', 'kriteria')->toArray();
+        // dd($weights);
 
         // Data maksimum dan minimum
         $maxHarga = Barang::max('harga');
-        $minStok = Barang::min('stok_saat_ini');
-        $laporan = Laporan::selectRaw('id_barang, SUM(total_barang_keluar) as total')
-        ->groupBy('id_barang')
-        ->pluck('total', 'id_barang');
 
-        $maxLaporan = $laporan->max();
-        // dd($maxHarga, $minStok, $maxLaporan);
+        // Mengambil data barang masuk (tipe_transaksi = 'beli') dan barang keluar (tipe_transaksi = 'jual')
+        $barangMasuk = Transaksi::where('tipe_transaksi', 'beli')
+            ->selectRaw('id_barang, SUM(jumlah) as jumlah_barang')
+            ->groupBy('id_barang')
+            ->pluck('jumlah_barang', 'id_barang');
+
+        $barangKeluar = Transaksi::where('tipe_transaksi', 'jual')
+            ->selectRaw('id_barang, SUM(jumlah) as jumlah_barang')
+            ->groupBy('id_barang')
+            ->pluck('jumlah_barang', 'id_barang');
+
+        $maxMasuk = $barangMasuk->min();
+        $maxKeluar = $barangKeluar->max();
 
         // Proses perhitungan SAW
-        $hasil = $barangs->map(function ($barang) use ($weights, $maxHarga, $minStok, $laporan, $maxLaporan) {
+        $hasil = $barangs->map(function ($barang) use ($weights, $maxHarga, $barangMasuk, $barangKeluar, $maxMasuk, $maxKeluar) {
             $C1 = $maxHarga > 0 ? $barang->harga / $maxHarga : 0; // Normalisasi harga (maximize)
-            $C2 = $minStok > 0 ? $minStok / $barang->stok_saat_ini : 0; // Normalisasi stok (minimize)
-            $C3 = $maxLaporan > 0 ? ($laporan->get($barang->id_barang, 0) / $maxLaporan) : 0; // Normalisasi laporan (maximize)
+            $C2 = $minMasuk > 0 ? ($barangMasuk->get($barang->id_barang, 0) / $minMasuk) : 0; // Normalisasi barang masuk (maximize)
+            $C3 = $maxKeluar > 0 ? ($barangKeluar->get($barang->id_barang, 0) / $maxKeluar) : 0; // Normalisasi barang keluar (maximize)
 
             $score = $C1 * $weights['C1'] + $C2 * $weights['C2'] + $C3 * $weights['C3'];
 
@@ -46,7 +55,7 @@ class PerhitunganController extends Controller
         });
 
         $hasil = $hasil->sortByDesc('score');
-        dd($hasil);
+        // dd($hasil);
 
         return view('dashboard.tampilan', compact('hasil'));
     }

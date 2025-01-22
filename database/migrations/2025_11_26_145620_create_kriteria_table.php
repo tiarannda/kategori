@@ -17,6 +17,12 @@ class CreateKriteriaTable extends Migration
         });
     }
 
+
+    /**
+     * Reverse the migrations.
+     *
+     * Drops the `kriteria` table.
+     */
     public function down()
     {
         Schema::dropIfExists('kriteria');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Barang;
+use App\Models\Bobot;
 use App\Models\Transaksi;
 use App\Models\Laporan;
 use App\Http\Controllers\PerhitunganController;
@@ -66,39 +67,15 @@ class DashboardController extends Controller
         }
 
 
-        // // Ambil semua data barang
-        // $barangs = Barang::all();
-
-        // // Mock data for laporanData (you need to ensure this comes from a valid source)
-        // $laporanData = collect(); // Replace this with actual data as needed
-
-        // // Hitung data SAW dan ambil hanya 1 hasil terbaik
-        // $hasilSAW = $barangs->map(function ($barang) use ($laporanData) {
-        //     $C1_normalisasi = $barang->stok_saat_ini / Barang::max('stok_saat_ini');
-        //     $C2_normalisasi = $barang->harga / Barang::max('harga');
-        //     $C3_normalisasi = $laporanData->get($barang->id_barang, 0) > 0
-        //         ? $laporanData->get($barang->id_barang, 0) / max($laporanData->max(), 1)
-        //         : 0;
-
-        //     $skor_saw = $C1_normalisasi * 0.4 + $C2_normalisasi * 0.3 + $C3_normalisasi * 0.3;
-
-        //     return [
-        //         'nama' => $barang->nama_barang,
-        //         'C1_normalisasi' => $C1_normalisasi,
-        //         'C2_normalisasi' => $C2_normalisasi,
-        //         'C3_normalisasi' => $C3_normalisasi,
-        //         'skor_saw' => $skor_saw,
-        //     ];
-        // });
-        // dd($hasilSAW);
-
+        // TPK
         $barangs = Barang::all();
         if ($barangs->isEmpty()) {
             return response()->json(['message' => 'Data barang tidak ditemukan'], 404);
         }
 
         // Bobot kriteria
-        $weights = ['C1' => 0.5, 'C2' => 0.3, 'C3' => 0.2];
+        $weights = Bobot::all()->pluck('bobot', 'kriteria')->toArray();
+        // dd($weights);
 
         // Data maksimum dan minimum
         $maxHarga = Barang::max('harga');
@@ -107,6 +84,10 @@ class DashboardController extends Controller
         ->groupBy('id_barang')
         ->pluck('total', 'id_barang');
 
+        // dd($laporan);
+
+        // dd($maxHarga, $minStok, $laporan);
+
         $maxLaporan = $laporan->max();
         // dd($maxHarga, $minStok, $maxLaporan);
 
@@ -114,9 +95,12 @@ class DashboardController extends Controller
         $hasil = $barangs->map(function ($barang) use ($weights, $maxHarga, $minStok, $laporan, $maxLaporan) {
             $C1 = $maxHarga > 0 ? $barang->harga / $maxHarga : 0; // Normalisasi harga (maximize)
             $C2 = $minStok > 0 ? $minStok / $barang->stok_saat_ini : 0; // Normalisasi stok (minimize)
-            $C3 = $maxLaporan > 0 ? ($laporan->get($barang->id_barang, 0) / $maxLaporan) : 0; // Normalisasi laporan (maximize)
+            $C3 = $maxLaporan > 0 ? $laporan->get($barang->id_barang, 0) / $maxLaporan : 0; // Normalisasi laporan (maximize)
+            // dd($laporan->get($barang->id_barang, 0));
+            // dd($C1, $C2, $C3);
 
-            $score = $C1 * $weights['C1'] + $C2 * $weights['C2'] + $C3 * $weights['C3'];
+            $score = $C1 * $weights['harga'] + $C2 * $weights['barang_masuk'] + $C3 * $weights['barang_keluar'];
+            // dd($C1, $C2, $C3, $score);
 
             return [
                 'nama' => $barang->nama_barang,
@@ -127,16 +111,38 @@ class DashboardController extends Controller
             ];
         });
 
+
         $hasil = $hasil->sortByDesc('score');
+        // $hasil = $hasil->toArray();
         // dd($hasil);
 
         // Ambil hasil dengan skor tertinggi
         $hasilTertinggi = $hasil->sortByDesc('score')->first();
-        // dd($hasilTertinggi);
+        // dd($weights,$maxHarga, $minStok, $maxLaporan, $hasil, $hasilTertinggi);
+
+        $dataHasil = [];
+
+        foreach ($hasil as $item) {
+            $dataHasil[] = [
+                'nama' => $item['nama'],
+                'C1' => $item['C1'],
+                'C2' => $item['C2'],
+                'C3' => $item['C3'],
+                'score' => $item['score'],
+            ];
+        }
+        // dd($dataHasil);
 
         // Data warna untuk grafik
         $warnaPemasukan = 'rgba(75, 192, 192, 0.2)';
         $warnaPengeluaran = 'rgba(255, 99, 132, 0.2)';
+
+        // Bobot
+        $bobots = Bobot::all();
+        $totalBobot = 0;
+        foreach ($bobots as $bobot) {
+            $totalBobot += $bobot->bobot;
+        }
 
         return view('dashboard.dashboard', [
             'hasilTertinggi' => $hasilTertinggi,
@@ -152,7 +158,26 @@ class DashboardController extends Controller
             'warnaPemasukan' => $warnaPemasukan,
             'warnaPengeluaran' => $warnaPengeluaran,
             'month' => $month,
-            'year' => $year
+            'year' => $year,
+            'bobots' => $bobots,
+            'totalBobot' => $totalBobot,
+            'dataHasil' => $dataHasil
         ]);
+    }
+
+    public function inputBobot(Request $request, $id)
+    {
+        $bobots = Bobot::findOrFail($id);
+
+        if ($request->validate([
+            'bobot' => 'required',
+        ])) {
+            $bobots->bobot = $request->input('bobot');
+            $bobots->save();
+
+            return redirect()->route('dashboard')->with('success', 'Bobot berhasil diperbarui!');
+        } else {
+            return redirect()->route('dashboard')->with('error', 'Bobot gagal diperbarui!');
+        }
     }
 }
