@@ -74,7 +74,7 @@
                             <p>Laporan</p>
                         </a>
                     </li>
-                    <li class="nav-item @yield('u_active')">
+                    <li class="nav-item @yield('user_active')">
                         @if(auth()->user()->role == 'admin')
                         <a class="nav-link" href="{{ route('users.index') }}">
                             <p>Akun</p>
