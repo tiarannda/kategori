@@ -28,7 +28,7 @@ class TransaksiController extends Controller
     {
         // simpan transaksi baru
         $request->validate([
-            'id_barang' => 'required|exists:barangs,id_barang', 
+            'id_barang' => 'required|exists:barangs,id_barang',
             'jumlah_barang' => 'required|integer|min:1',
             'tipe_transaksi' => 'required|in:jual,beli',
         ]);
