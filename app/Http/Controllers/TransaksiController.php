@@ -13,7 +13,7 @@ class TransaksiController extends Controller
 {
     // Ambil semua transaksi dan urutkan berdasarkan ID secara descending
     $transaksis = Transaksi::with('barang')->orderBy('id', 'desc')->get();
-    return view('transaksis.index', compact('transaksis'));
+    return view('transaksis.index', compact('transaksis')); 
 }
 
 

@@ -81,6 +81,7 @@
                             </ul>
                         </div>
                     </li>
+                    
 
 
                     <li class="nav-item @yield('laporan_active')">
